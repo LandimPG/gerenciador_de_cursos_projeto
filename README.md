@@ -21,7 +21,7 @@ O foco não está na interface, mas sim na correta implementação de:
  - Métodos Especiais
  - O gerenciamento das relações entre múltiplas classes 
 
-## ====== UML TEXTUAL =======
+## ===== UML TEXTUAL =====
 
 
 **1. Classe Curso**  
@@ -31,6 +31,7 @@ O foco não está na interface, mas sim na correta implementação de:
              - `carga_horaria`  
              - `lista_pre_requisitos`  
              - `ementa`  
+             - **Método Especial**: - `__str__` (Retorna resumo textual do curso)
      
 **2. Classe Oferta (Classe Base)**  
    
@@ -54,7 +55,8 @@ O foco não está na interface, mas sim na correta implementação de:
              - `listar_alunos` (mostra a lista de alunos)  
              - `ver_taxa_aprovacao_turma` (Calcula a taxa de aprovação com base na lista matrículas)  
              - `ver_distribuicao_notas` (Calcula com base na lista matrículas)  
-             
+             - **Método Especial**: - `__len__` (Retorna a quantidade de alunos matriculados)
+     
 **4. Classe Pessoa (Classe Base)**
      
    - Atributos:  
@@ -70,6 +72,7 @@ O foco não está na interface, mas sim na correta implementação de:
      
    - Métodos:  
              - `calcular_cr`  
+             - **Método Especial**: - `__lt__` (Permite ordenar alunos pelo CR para relatórios Top N)  
      
 **6. Classe Matricula**
      
@@ -84,12 +87,30 @@ O foco não está na interface, mas sim na correta implementação de:
              - `trancar_matricula`  
              - `lancar_frequencia`  
              - `lancar_nota`  
-             - `calcular_situacao`
+             - `calcular_situacao`  
+             - **Método Especial**: - `__eq__` (Verifica igualdade para impedir duplicação de matrícula)
      
-  ## ====== RELACIONAMENTOS =======  
+**7. Sistema / Interface CLI (Arquivo main.py)**
+   *(Responsável pela orquestração e gerenciamento das listas globais)*  
+   
+   - Métodos de Gerenciamento (CRUD):  
+             - `cadastrar_aluno`  
+             - `cadastrar_curso`  
+             - `abrir_turma` (cria objeto Turma)  
+             - `buscar_aluno`  
+             - `buscar_curso`  
+
+   - Métodos de Orquestração:  
+             - `realizar_matricula` (Valida pré-req, vagas e choque de horário)  
+
+   - Métodos de Relatórios Globais:  
+             - `gerar_relatorio_top_n_alunos` (Ordena todos os alunos por CR)  
+             - `gerar_relatorio_alunos_em_risco` (Verifica todas as matrículas ativas)
+     
+  ## ===== RELACIONAMENTOS ======  
   
 **1. Herança:**  
-   - `Aluno` --|> `Pessoa`  (Aluno é uma Pessoa)
+   - `Aluno` --|> `Pessoa`  (Aluno é uma Pessoa)  
    - `Turma` --|> `Oferta`  (Turma é uma Oferta)  
 
 **2. Associação:**  
@@ -103,8 +124,28 @@ O foco não está na interface, mas sim na correta implementação de:
      (A Matrícula conecta EXATAMENTE 1 Aluno a 1 Turma)  
   
    - `Turma` "N" --> "1" `Curso`  
-     (Várias Turmas podem ser ofertadas para o mesmo Curso)
+     (Várias Turmas podem ser ofertadas para o mesmo Curso)  
   
 **3. Auto-Relacionamento**  
    - `Curso` "1" --> "N" `Curso`  
-     (Um Curso pode ter vários outros Cursos como pré-requisito)  
+     (Um Curso pode ter vários outros Cursos como pré-requisito)
+
+## ===== Estrutura de Arquivos =====
+
+   Organização dos arquivos do projeto
+
+   ```text
+   /gerenciador_de_cursos_projeto
+   │
+   ├──.gitignore          # Arquivos e pastas ignorados pelo Git (ex: __pycache__)
+   ├──README.MD           # Documentação do projeto e UML Textual    
+   ├──main.py             # Ponto de entrada da aplicação (CLI e Lógica do Sistema)
+   │
+   ├──pessoa.py           # Classe base: Pessoa
+   ├──aluno.py            # Classe: Aluno (Herda de Pessoa)
+   │
+   ├──oferta.py           # Classe base: Oferta
+   ├──turma.py            # Classe: Turma (Herda de Oferta)
+   │
+   ├──curso.py            # Classe: Curso
+   ├──matricula.py        # Classe: Matricula (Associa Aluno e Turma)
