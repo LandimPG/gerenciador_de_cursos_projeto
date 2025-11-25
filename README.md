@@ -37,25 +37,26 @@ O foco não está na interface, mas sim na correta implementação de:
    
    - Atributos:  
              - `codigo_curso`  
-             - `vagas`  
+             - `vagas_totais`  
              - `semestre`  
 
 **3. Classe Turma (Herda da Classe Oferta)**  
    
    - Atributos:  
-         - `horarios`  
+         - `horarios`       (Contém em forma de dicionário os dias e os horários das aulas.)  
          - `local`  
          - `codigo_turma`  
-         - `estado_aberta`  
-         - `matriculas` (lista de objetos da Classe Matricula)
+         - `estado_aberta`  (Identifica se a turma se encontra aberta (True) ou fechada (False))  
+         - `matriculas`     (lista de objetos da Classe Matricula)  
      
    - Métodos:  
              - `abrir_turma` (muda "estado_aberta" para True)  
              - `fechar_turma` (muda "estado_aberta" para False)  
              - `listar_alunos` (mostra a lista de alunos)  
+             - `adicionar_matricula` (Recebe um objeto Matrícula e adiciona à lista da turma, se houver vagas disponíveis.)  
              - `ver_taxa_aprovacao_turma` (Calcula a taxa de aprovação com base na lista matrículas)  
              - `ver_distribuicao_notas` (Calcula com base na lista matrículas)  
-             - **Método Especial**: - `__len__` (Retorna a quantidade de alunos matriculados)
+             - **Método Especial**: - `__len__` (Retorna a quantidade de alunos matriculados)  
      
 **4. Classe Pessoa (Classe Base)**
      
@@ -66,12 +67,14 @@ O foco não está na interface, mas sim na correta implementação de:
 **5. Classe Aluno (Herda da Classe Pessoa)**
      
    - Atributos:  
-             - `matricula_id`  
-             - `historico`  
-             - `matriculas_atuais` (lista de matriculas ativas)
+             - `codigo_matricula`  
+             - `historico`         (lista de objetos de matricula não ativas)
+             - `matriculas_atuais` (lista de objetos de matricula ativas)
      
-   - Métodos:  
-             - `calcular_cr`  
+   - Métodos:
+             - `realizar_matricula`   (Adiciona uma nova matrícula à lista de atuais.) 
+             - `atualizar_historico`  (Verifica as matrículas atuais. Se alguma estiver finalizada, [não está mais CURSANDO], move para o histórico.)  
+             - `calcular_cr`  (Calculo do coeficiente de rendimento do aluno)  
              - **Método Especial**: - `__lt__` (Permite ordenar alunos pelo CR para relatórios Top N)  
      
 **6. Classe Matricula**
@@ -81,13 +84,13 @@ O foco não está na interface, mas sim na correta implementação de:
              - `turma` (Objeto da Classe Turma)  
              - `notas`  
              - `frequencia`  
-             - `estado`
+             - `estado`  (Define o estado da matrícula entre ([APROVADO'|'REPROVADO_POR_NOTA'|'REPROVADO_POR_FREQUENCIA'|'CURSANDO'|TRANCADA]) caso o aluno seja                             reprovado por nota e por frequência o sistema define que reprovou por frequência.)
      
    - Métodos:  
              - `trancar_matricula`  
              - `lancar_frequencia`  
              - `lancar_nota`  
-             - `calcular_situacao`  
+             - `calcular_situacao`  (Calcula o estado da matricula atual e muda o atributo `estado`)
              - **Método Especial**: - `__eq__` (Verifica igualdade para impedir duplicação de matrícula)
      
 **7. Sistema / Interface CLI (Arquivo main.py)**
@@ -99,9 +102,6 @@ O foco não está na interface, mas sim na correta implementação de:
              - `abrir_turma` (cria objeto Turma)  
              - `buscar_aluno`  
              - `buscar_curso`  
-
-   - Métodos de Orquestração:  
-             - `realizar_matricula` (Valida pré-req, vagas e choque de horário)  
 
    - Métodos de Relatórios Globais:  
              - `gerar_relatorio_top_n_alunos` (Ordena todos os alunos por CR)  
@@ -137,15 +137,19 @@ O foco não está na interface, mas sim na correta implementação de:
    ```text
    /gerenciador_de_cursos_projeto
    │
-   ├──.gitignore          # Arquivos e pastas ignorados pelo Git (ex: __pycache__)
-   ├──README.MD           # Documentação do projeto e UML Textual    
-   ├──main.py             # Ponto de entrada da aplicação (CLI e Lógica do Sistema)
+   ├── src/                    <-- Suas pastas de código
+   │   ├── academicos/
+   │   │   ├──oferta.py           # Classe base: Oferta
+   │   │   ├── curso.py           # Classe: Curso
+   │   │   ├── turma.py           # Classe: Turma (Herda de Oferta)
+   │   │   └── matricula.py       # Classe: Matricula (Associa Aluno e Turma)
+   │   └── usuarios/
+   │       ├── aluno.py        # Classe: Aluno (Herda de Pessoa)
+   │       └── pessoa.py       # Classe base: Pessoa
    │
-   ├──pessoa.py           # Classe base: Pessoa
-   ├──aluno.py            # Classe: Aluno (Herda de Pessoa)
-   │
-   ├──oferta.py           # Classe base: Oferta
-   ├──turma.py            # Classe: Turma (Herda de Oferta)
-   │
-   ├──curso.py            # Classe: Curso
-   ├──matricula.py        # Classe: Matricula (Associa Aluno e Turma)
+   ├── main.py                 # Arquivo principal
+   ├── test_classes.py         # arquivo de testes (pytest)
+   ├──.gitignore               # Arquivos e pastas ignorados pelo Git (ex: __pycache__)
+   └── README.md               # Documentação do projeto e UML Textual
+
+
