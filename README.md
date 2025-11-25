@@ -130,6 +130,7 @@ O foco não está na interface, mas sim na correta implementação de:
    - `Curso` "1" --> "N" `Curso`  
      (Um Curso pode ter vários outros Cursos como pré-requisito)
 
+
 ## ===== Estrutura de Arquivos =====
 
    Organização dos arquivos do projeto
@@ -152,4 +153,15 @@ O foco não está na interface, mas sim na correta implementação de:
    ├──.gitignore               # Arquivos e pastas ignorados pelo Git (ex: __pycache__)
    └── README.md               # Documentação do projeto e UML Textual
 
+```
+## ===== Como Executar =====
+
+### Pré-requisitos
+* Python 3.x
+* Pytest (para rodar os testes unitários)
+
+### Instalação das dependências
+Caso não tenha o pytest instalado:
+```bash
+pip install pytest
 
