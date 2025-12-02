@@ -148,13 +148,15 @@ Responsabilidades:
         self.matriculas.append(nova_matricula)
         print(f"Aluno matriculado na turma {self.codigo_turma} com sucesso.")
         return True
-
+    
+    #ALERTA
     def ver_taxa_aprovacao_turma(self):
 
         """Calcula a taxa de aprovação."""
         print("Funcionalidade disponível em breve.")
         return 0.0
     
+    #ALERTA
     def ver_distribuicao_notas(self):
         
         """Calcula a taxa de aprovação."""
@@ -181,19 +183,17 @@ Responsabilidades:
 
     @classmethod
     def from_dict(cls, dados):
-
         local_salvo = dados.get("local")
         if local_salvo == "Local não informado.":
             local_salvo = None
 
         return cls(
-            codigo_curso = dados["codigo_curso"], 
-            vagas_totais = dados["vagas_totais"], 
+            codigo_curso = int(dados["codigo_curso"]),  # Força Inteiro
+            vagas_totais = int(dados["vagas_totais"]),  # Força Inteiro
             semestre = dados["semestre"], 
             horarios = dados.get("horarios", {}), 
-            codigo_turma = dados["codigo_turma"], 
+            codigo_turma = int(dados["codigo_turma"]),  # Força Inteiro (Essencial!)
             estado_aberta = dados["estado_aberta"], 
             matriculas = [],
             local = local_salvo
-
         )

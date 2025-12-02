@@ -168,11 +168,14 @@ class Matricula:
 
         if not isinstance(objeto, Matricula):
             return False
+        # Use getattr para evitar erro caso o objeto esteja incompleto
+        cod_aluno_self = getattr(self.aluno, 'codigo_matricula', None)
+        cod_turma_self = getattr(self.turma, 'codigo_turma', None)
         
-        mesmo_aluno = self.aluno.codigo_matricula == objeto.aluno.codigo_matricula
-        mesma_turma = self.turma.codigo_turma == objeto.turma.codigo_turma
+        cod_aluno_other = getattr(objeto.aluno, 'codigo_matricula', None)
+        cod_turma_other = getattr(objeto.turma, 'codigo_turma', None)
 
-        return mesmo_aluno and mesma_turma
+        return cod_aluno_self == cod_aluno_other and cod_turma_self == cod_turma_other
 
     def to_dict(self):
         return {

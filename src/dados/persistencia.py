@@ -1,24 +1,21 @@
 import json
 import os 
 import sys
-# --- CORREÇÃO DO PATH ---
-# Pega o caminho absoluto da pasta onde este arquivo está (src/dados)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Pasta dados
+ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR)) # Raiz do projeto (onde está o main.py provavelmente)
+arquivo_db = os.path.join(ROOT_DIR, "banco_dados.json")
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Sobe dois níveis para chegar na raiz do projeto
-# 1. De 'dados' para 'src'
-# 2. De 'src' para a raiz 'gerenciador_de_cursos_projeto'
 project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 
-# Adiciona a raiz ao sys.path para que o Python reconheça "src" como um módulo
 sys.path.append(project_root)
 
 from src.academicos.turma import Turma
 from src.academicos.matricula import Matricula
 from src.usuarios.aluno import Aluno
 from src.academicos.curso import Curso
-
-arquivo_db = "banco_dados.json"
 
 def salvar_dado(lista_alunos, lista_cursos, lista_turmas, lista_matriculas):
     """
@@ -66,6 +63,7 @@ def carregar_dados():
             mapa_alunos[int(a.codigo_matricula)] = a
         
         lista_matriculas = []
+
         for m_dict in dados.get("matriculas", []):
 
             try:
@@ -93,7 +91,8 @@ def carregar_dados():
 
                 turma_obj.matriculas.append(nova_matricula)
 
-        print(f"Dados carregados.")
+        print("Dados carregados com sucesso.")
+
         return lista_alunos, lista_cursos, lista_turmas, lista_matriculas
 
 

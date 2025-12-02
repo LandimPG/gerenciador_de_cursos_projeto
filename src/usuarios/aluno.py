@@ -91,17 +91,38 @@ class Aluno(Pessoa):
         
         return soma_notas_finais / total_materias
 
+    #Auxílio para verificação de choque de horário
+    def _verif_choque_chorario(self, horario1: str, horario2: str) -> bool:
+        """
+        veirifica se dois horários se chocam e retorna True se sim.
+        """
+        inicio1, fim1 = [int(h.replace(":", "")) for h in horario1.split("-")]
+        inicio2, fim2 = [int(h.replace(":", "")) for h in horario2.split("-")]
+
+        return inicio1 < fim2 and inicio2 < fim1
+
     def realizar_matricula(self, nova_matricula):
         """
-        Adiciona uma nova matrícula à lista de atuais.
+        Adiciona uma nova matrícula à lista de atuais. Agora, validando choque de horário 
         """
-        if not hasattr(nova_matricula, 'notas'):
+        if not hasattr(nova_matricula, 'turma'): #Atributo corrigido de notas para turma
             raise TypeError("O objeto precisa ser uma Matrícula válida.")
 
         if nova_matricula in self.matriculas_atuais:
             raise ValueError("O aluno já está matriculado nesta turma.")
-        # Semana 3 e 4 precisa implementar veriifcações
-        #   -Choque de horários, Vagas na turma, Pré-requisitos
+
+        novos_horarios = nova_matricula.turma.horarios
+
+        for matricula_existente in self.matriculas_atuais:
+            horarios_existentes = matricula_existente.turma.horarios
+
+            for dia, hora_nova in novos_horarios.items():
+                if dia in horarios_existentes:
+                    hora_existente = horarios_existentes[dia]
+
+                    if self._verif_choque_chorario(hora_nova, hora_existente):
+                        raise ValueError(f"Choque de Horário! Ocorre no dia {dia} com a turma {matricula_existente.turma.codigo_turma}.")
+                    
         self.matriculas_atuais.append(nova_matricula)
         print("Aluno matriculado com sucesso.")
 
