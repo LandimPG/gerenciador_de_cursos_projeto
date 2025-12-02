@@ -8,90 +8,134 @@ from src.academicos.turma import Turma
 from src.usuarios.aluno import Aluno
 from src.academicos.matricula import Matricula
 
+# --- VARIÁVEIS GLOBAIS (O "Banco de Dados" na Memória RAM) ---
+lista_alunos = []
+lista_cursos = []
+lista_turmas = []
+lista_matriculas = []
+
+def limpar_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+# --- FUNÇÕES DE CADASTRO ---
+
+def cadastrar_curso():
+    print("\n----Novo Curso----")
+    try:
+        nome = input("Nome do Curso: ")
+        codigo_curso = int(input("Código(ID) do Curso: "))
+        horas  = int(input("Carga Horária: "))
+        ementa = input("Ementa/Descrição: ")
+
+        novo_curso = Curso(nome, codigo_curso, horas, ementa)
+        lista_cursos.append(novo_curso)
+        print("Curso cadastro.")
+    except ValueError as e:
+        print("Erro: Código e Horas devem ser números inteiros")
+
+
+def cadastrar_aluno():
+    print("\n----Novo Aluno----")
+
+    try:
+        nome = input("Nome do Aluno: ")
+        email = input("Email do Aluno: ")
+        matricula = int(input("Número de Matrícula do Aluno: "))
+
+        novo_aluno = Aluno(nome, email, matricula)
+        lista_alunos.append(novo_aluno)
+        print("Aluno cadastrado com sucesso! :)")
+
+    except ValueError as e:
+        print(f"Erro de validação {e}") #Tirar dúvida sobre a diferença dessa validação para a de cadastrar curso
+
+def abrir_turma():
+    print("\n----Abrir nova Turma----")
+    if not lista_cursos:
+        print("Cadastre um curso antes de abrir uma turma.")
+        return
+    
+    try:
+        #Listar cursos:
+        print("Cursos Disponíveis: ")
+        for c in lista_cursos:
+            print(f"Nome: {c.nome} | ID: {c.codigo_curso}")
+
+        cod_curso = int(input("\nDigite o ID do curso para essa turma: "))
+
+        curso_buscado = None
+        for c in lista_cursos:
+            if c.codigo_curso == cod_curso:
+                curso_buscado = c
+                break
+
+        if not curso_buscado:
+            print("Curso não foi encontrado. :(")
+            return
+        
+        cod_turma = int(input("Código (ID) da Turma: "))
+        vagas = int(input("Vagas totais: "))
+        semestre = input("Semestre (ex: 2025.1): ")
+        local = input("Local (Ex: A01): ")
+
+        #Explicação de como digitar o horário para o usuário
+
+        print("Horário segue o exemplo: seg 18:00-21:00")
+        dia = input("Dia ex(seg|ter...): ")
+        hora = input("Duração ex(HH:MM-HH:MM|10:00-11:00)")
+        horarios = {dia:hora}
+
+        nova_turma = Turma(cod_curso, vagas, semestre, horarios,cod_turma,local=local)
+        nova_turma.abrir_turma() #abrir a turma
+        lista_turmas.append(nova_turma)
+        print("Turma aberta com sucesso.")
+
+    except ValueError as e:
+        print(f"Erro nos dados: {e}")
+
+def realizar_matricula():
+    print("\n--- Matricular Aluno ---")
+    if not lista_alunos or not lista_alunos:
+        print("Precisa-se ter alunos e turmas cadastrados no sistema.")
+        return
+    
+    try:
+        cod_aluno = int(input("Digite a matrícula do aluno: "))
+        cod_turma = int(input("Digite o código da turma: "))
+
+        aluno_obj = next((a for a in lista_alunos if a.codigo_matricula == cod_aluno), None)
+        turma_obj = next((t for t in lista_turmas if t.codigo_turma == cod_turma), None)
+
+        if not aluno_obj:
+            print("Aluno não encontrado.")
+            return
+        if not turma_obj:
+            print("Turma não encontrada.")
+            return
+        
+        nova_matricula = Matricula(aluno_obj, turma_obj)
+        lista_matriculas.append(nova_matricula)
+        turma_obj.adicionar_matricula(nova_matricula)
+        aluno_obj.realizar_matricula(nova_matricula)
+
+        print(f"Matricula realizada. Aluno: {aluno_obj.nome} em ID turma: {turma_obj.codigo_turma}")
+
+    except ValueError as e:
+        print(f"Erro: {e}")
+
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+
+
+
+
+
+
+
+
+
 def main():
     print("=== Demonstração Entrega Semana 2: Classes e Encapsulamento ===\n")
 
-    try:
-        # 1. Instanciando Cursos (Testando __init__ e validações de Curso)
-        print("--- 1. Criando Cursos ---")
-        curso_poo = Curso(
-            nome="Programação Orientada a Objetos",
-            codigo_curso=101,
-            carga_horaria=64,
-            ementa="Conceitos de POO, Classes, Herança, Polimorfismo."
-        )
-        print(f"Curso Criado (Teste __str__):\n{curso_poo}") # 
-
-        curso_bd = Curso("Banco de Dados", 102, 60, "SQL, Modelagem, Normalização")
-        print("Curso de BD criado com sucesso.")
-
-        # 2. Instanciando Alunos (Testando Pessoa e Aluno)
-        print("\n--- 2. Criando Alunos ---")
-        aluno1 = Aluno(nome="Carlos Silva", email="carlos@aluno.ufca.edu.br", codigo_matricula=2025001)
-        aluno2 = Aluno(nome="Ana Pereira", email="ana@aluno.ufca.edu.br", codigo_matricula=2025002)
-        print(f"Alunos criados: {aluno1.nome} e {aluno2.nome}")
-
-        # 3. Instanciando Turma (Testando Oferta e Turma)
-        print("\n--- 3. Criando Turma ---")
-        horarios_poo = {"ter": "14:00-16:00", "qui": "14:00-16:00"}
-        turma_poo = Turma(
-            codigo_curso=curso_poo.codigo_curso,
-            vagas_totais=30,
-            semestre="2025.1",
-            horarios=horarios_poo,
-            codigo_turma=1,
-            local="A01"
-        )
-        turma_poo.abrir_turma() # [cite: 16]
-        print(f"Turma {turma_poo.codigo_turma} criada para o semestre {turma_poo.semestre}.")
-
-        # 4. Realizando Matrículas (Testando Relacionamento e __len__)
-        print("\n--- 4. Realizando Matrículas ---")
-        
-        # Criando objeto matrícula para o aluno 1
-        matr1 = Matricula(aluno=aluno1, turma=turma_poo)
-        turma_poo.adicionar_matricula(matr1)       # Adiciona na Turma
-        aluno1.realizar_matricula(matr1)           # Adiciona no Aluno
-        
-        # Criando objeto matrícula para o aluno 2
-        matr2 = Matricula(aluno=aluno2, turma=turma_poo)
-        turma_poo.adicionar_matricula(matr2)
-        aluno2.realizar_matricula(matr2)
-
-        print(f"Ocupação da turma (Teste __len__): {len(turma_poo)} alunos matriculados.") # 
-
-        # 5. Simulando Notas e Ordenação (Testando __lt__ e cálculo de CR)
-        print("\n--- 5. Lançando Notas e Testando Ordenação (__lt__) ---")
-        
-        # Carlos tirou 9.0
-        matr1.lancar_nota(9.0)
-        aluno1.atualizar_historico() # Move para histórico para calcular CR (simulação)
-        
-        # Ana tirou 9.5
-        matr2.lancar_nota(9.5)
-        aluno2.atualizar_historico()
-
-        print(f"CR do {aluno1.nome}: {aluno1.calcular_cr()}")
-        print(f"CR da {aluno2.nome}: {aluno2.calcular_cr()}")
-
-        # Teste do __lt__ 
-        if aluno1 < aluno2:
-            print(f"Ordenação: {aluno1.nome} vem antes de {aluno2.nome} (Menor CR ou Ordem Alfabética).") 
-        else:
-            print(f"Ordenação: {aluno2.nome} vem antes de {aluno1.nome}.")
-
-    except (ValueError, TypeError) as e:
-        print(f"\n[ERRO DE VALIDAÇÃO DETECTADO]: {e}")
-    
-    except Exception as e:
-        print(f"\n[ERRO INESPERADO]: {e}")
-
-    
-    print("\n--- 6. Teste de Validação (Tentativa de Erro) ---")
-    try:
-        t_erro = Turma(101, 30, "semestre_errado", {}, 2)
-    except ValueError as e:
-        print(f"Sucesso! O sistema bloqueou o erro: {e}") 
-
-if __name__ == "__main__":
-    main()
+cadastrar_aluno()

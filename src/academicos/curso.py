@@ -103,3 +103,29 @@ Código do Curso: {self.codigo_curso}
 Carga Horária: {self.carga_horaria} Horas
 Ementa do Curso: {self.ementa}\n  
 Lista de Pré-Requisitos: {self.lista_pre_requisitos}\n"""
+    
+
+    def to_dict(self):
+        """
+        Transforma o objeto Curso em um dicionário para salvar no JSON.
+        """
+        return {
+            "nome": self.nome,
+            "codigo_curso": self.codigo_curso,
+            "carga_horaria": self.carga_horaria,
+            "ementa": self.ementa,
+            "pre_requisitos": self.lista_pre_requisitos
+        }
+    
+    @classmethod
+    def from_dict(cls, dados):
+        """
+        Recebe um dicionário (do JSON) e retorna um objeto Curso.
+        """
+        return cls(
+            nome = dados["nome"],
+            codigo_curso = dados["codigo_curso"],
+            carga_horaria = dados["carga_horaria"],
+            ementa = dados["ementa"],
+            lista_pre_requisitos = dados.get("pre_requisitos", [])
+        )

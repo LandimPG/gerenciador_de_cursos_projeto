@@ -163,3 +163,37 @@ Responsabilidades:
 
     def __len__(self):
         return len(self.matriculas)
+    
+
+    def to_dict(self):
+        """
+        Transforma o objeto Curso em um dicionário para salvar no JSON.
+        """
+        return {
+            "codigo_curso": self.codigo_curso,
+            "vagas_totais": self.vagas_totais,
+            "semestre": self.semestre,
+            "horarios": self.horarios,
+            "codigo_turma": self.codigo_turma,
+            "estado_aberta": self.estado_aberta,
+            "local": self.local
+        }
+
+    @classmethod
+    def from_dict(cls, dados):
+
+        local_salvo = dados.get("local")
+        if local_salvo == "Local não informado.":
+            local_salvo = None
+
+        return cls(
+            codigo_curso = dados["codigo_curso"], 
+            vagas_totais = dados["vagas_totais"], 
+            semestre = dados["semestre"], 
+            horarios = dados.get("horarios", {}), 
+            codigo_turma = dados["codigo_turma"], 
+            estado_aberta = dados["estado_aberta"], 
+            matriculas = [],
+            local = local_salvo
+
+        )

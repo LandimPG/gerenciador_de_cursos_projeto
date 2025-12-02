@@ -173,3 +173,13 @@ class Matricula:
         mesma_turma = self.turma.codigo_turma == objeto.turma.codigo_turma
 
         return mesmo_aluno and mesma_turma
+
+    def to_dict(self):
+        return {
+            "codigo_aluno": self.aluno.codigo_matricula,
+            "codigo_turma": self.turma.codigo_turma,
+            "notas": self.notas,
+            "frequencia": self.frequencia,
+            "estado": self.estado
+
+        }

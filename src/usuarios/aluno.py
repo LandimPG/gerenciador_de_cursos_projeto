@@ -78,6 +78,7 @@ class Aluno(Pessoa):
         print("CR sendo calculado com média aritmética.")
         soma_notas_finais = 0.0
         total_materias = 0
+
         #Fazendo o CR com média aritmética, depois atualizar para ponderada
         for matricula in self.historico:
             if matricula.notas:
@@ -149,3 +150,23 @@ class Aluno(Pessoa):
         # Se os CRs são iguais, o Python desce para esta linha.
         # Retorna True se meu nome vem antes alfabeticamente.
         return self.nome < outro.nome
+    
+    @classmethod
+    def from_dict(cls, dados):
+        """
+        Recebe um dicionário (do JSON) e retorna um objeto Pessoa
+        """
+        return cls (
+            nome = dados["nome"], 
+            email = dados["email"], 
+            codigo_matricula = dados["codigo_matricula"], 
+            historico = dados.get("historico", []), 
+            matriculas_atuais = dados.get("matriculas_atuais", [])
+        )
+
+    def to_dict(self):
+        return {
+            "nome": self.nome,
+            "email": self.email,
+            "codigo_matricula": self.codigo_matricula
+        }
