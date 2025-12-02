@@ -99,9 +99,13 @@ O foco não está na interface, mas sim na correta implementação de:
    - Métodos de Gerenciamento (CRUD):  
              - `cadastrar_aluno`  
              - `cadastrar_curso`  
-             - `abrir_turma` (cria objeto Turma)  
-             - `buscar_aluno`  
-             - `buscar_curso`  
+             - `novar_turma` (cria objeto Turma)
+             - `realizar_matricula` (cria objeto Turma)  
+             - `buscar_matricula`  (Método auxiliar)
+             - `lancar_notas`  
+             - `lancar_frequencia`  
+             - `listas_gerais`  
+           
 
    - Métodos de Relatórios Globais:  
              - `gerar_relatorio_top_n_alunos` (Ordena todos os alunos por CR)  
@@ -144,6 +148,9 @@ O foco não está na interface, mas sim na correta implementação de:
    │   │   ├── curso.py           # Classe: Curso
    │   │   ├── turma.py           # Classe: Turma (Herda de Oferta)
    │   │   └── matricula.py       # Classe: Matricula (Associa Aluno e Turma)
+   │   └── dados/
+   │       └── persistencia.py     # Módulo responsável por Salvar/Carregar JSON
+   │
    │   └── usuarios/
    │       ├── aluno.py        # Classe: Aluno (Herda de Pessoa)
    │       └── pessoa.py       # Classe base: Pessoa
