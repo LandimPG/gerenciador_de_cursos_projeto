@@ -49,8 +49,10 @@ class GerenciadorSistema:
     
     # --- MÉTODOS DE ESCRITA ---
 
-    def criar_curso(self, nome, codigo_curso, horas, ementa):
-        # Correção: usar 'is not None' para evitar erros com objetos vazios
+    def criar_curso(self, nome, codigo_curso, horas, ementa, pre_requisitos = None):
+
+
+        # Validar se já existe
         if self.buscar_curso(codigo_curso) is not None:
             raise ValueError(f"Já existe um curso com o código {codigo_curso}")
         
@@ -58,10 +60,18 @@ class GerenciadorSistema:
             if c.nome.lower() == nome.strip().lower():
                 raise ValueError(f"Já existe um curso com o nome: {nome}.")
             
-        novo_curso = Curso(nome, codigo_curso, horas, ementa)
+        #Validação dos ids dos pré-requisitos.
+        if pre_requisitos:
+            for id_req in pre_requisitos:
+                if self.buscar_curso(id_req) is None:
+                    raise ValueError(f"Erro: O curso pré-requisito ID {id_req} ainda não existe no sistema.")
+
+
+        novo_curso = Curso(nome, codigo_curso, horas, ementa, pre_requisitos)
         self.cursos.append(novo_curso)
         return novo_curso
     
+
     def criar_aluno(self, nome, email, matricula):
         if self.buscar_aluno(matricula) is not None:
             raise ValueError(f"Já existe um aluno com a matrícula: {matricula}.")
@@ -100,15 +110,33 @@ class GerenciadorSistema:
         if turma is None:
             raise ValueError(f"Turma {cod_turma} não encontrada.")
 
-        # 3. Verifica Duplicidade
+        
         if self.buscar_matricula(cod_aluno, cod_turma) is not None:
             raise ValueError(f"Aluno já matriculado nessa turma.")
         
-        # 4. Cria Matrícula
+        # É preciso ter o objeto curso para saber a lista de pré requisitos
+        curso = self.buscar_curso(turma.codigo_curso)
+        if curso and curso.lista_pre_requisitos:
+            for id_req in curso.lista_pre_requisitos:
+                aprovado = False
+
+                for historico in aluno.historico:
+
+                    if historico.turma.codigo_curso == id_req and historico.estado == "APROVADO":
+                        aprovado = True
+                        break
+
+                if not aprovado:
+                    raise ValueError(f"Pré-requisito não atendido: O aluno precisa ser APROVADO no curso ID {id_req} antes.")
+                
+        # Verificar Duplicidade de vagas
+        if self.buscar_matricula(cod_aluno, cod_turma) is not None:
+            raise ValueError("Aluno já matriculado nessa turma.")
+
         nova_matricula = Matricula(aluno, turma)
 
-        turma.adicionar_matricula(nova_matricula)
-        aluno.realizar_matricula(nova_matricula)
+        turma.adicionar_matricula(nova_matricula) #Valida vagas
+        aluno.realizar_matricula(nova_matricula)  #VAlida choque de horário
 
         self.matriculas.append(nova_matricula)
         return nova_matricula

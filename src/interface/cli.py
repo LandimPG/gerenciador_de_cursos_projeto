@@ -54,7 +54,20 @@ class MenuCli:
             horas = int(input("Carga Horária: "))
             ementa = input("Ementa: ")
 
-            self.sistema.criar_curso(nome, codigo, horas, ementa)
+            print("Pré-requisitos (Digite os IDs separados por vírgula ou Enter para nenhum):")
+            entrada_req = input("IDs: ")
+
+            lista_req = []
+            if entrada_req.strip():
+
+                try:
+                    lista_req = [int(x.strip()) for x in entrada_req.split(",")]
+                except ValueError:
+                    print("Erro: digite apenas números separados por vírgula")
+                    return
+
+
+            self.sistema.criar_curso(nome, codigo, horas, ementa, lista_req)
             print("Curso cadastrado com sucesso!")
 
         except ValueError as e:
