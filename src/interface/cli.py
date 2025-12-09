@@ -20,6 +20,7 @@ class MenuCli:
         print("6. Lançar Frequência")
         print("7. Relatórios Gerais")
         print("8. Trancar Matrícula")
+        print("9. Calcular Situação do Aluno.")
         print("0. Sair e Salvar")
 
     def iniciar(self):
@@ -38,6 +39,7 @@ class MenuCli:
             elif opcao == '6': self.tela_lancar_frequencia()
             elif opcao == '7': self.tela_relatorios()
             elif opcao == '8': self.tela_trancar_matricula()
+            elif opcao == '9': self.tela_calcular_situacao()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -127,7 +129,7 @@ class MenuCli:
 
         try:
             cod_aluno = int(input("Matrícula do Aluno: "))
-            cod_turma = int(input("Código da turma: "))
+            cod_turma = int(input("ID da turma: "))
             self.sistema.realizar_matricula(cod_aluno, cod_turma)
             print("Matrícula realizada com sucesso.")
 
@@ -138,8 +140,8 @@ class MenuCli:
         print("\n---- Lançar Notas ----")
         try:
             cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("Turma: "))
-            nota = float(input("Nota (0 - 10: )"))
+            cod_turma = int(input("ID da Turma: "))
+            nota = float(input("Nota (0 - 10): "))
 
             self.sistema.processar_notas(cod_aluno, cod_turma, nota)
 
@@ -152,7 +154,7 @@ class MenuCli:
 
         try:
             cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("Turma: "))
+            cod_turma = int(input("ID da Turma: "))
             frequencia = float(input("Frequência (0 - 100): "))
 
             self.sistema.processar_frequencia(cod_aluno, cod_turma, frequencia)
@@ -182,7 +184,7 @@ class MenuCli:
         print("\n---- Trancar Matrícula ----")
         try:
             cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("Turma: "))
+            cod_turma = int(input("ID da Turma: "))
 
             confirmacao = input("Tem certeza que deseja trancar ? (s/n): ").lower()
             if confirmacao == "s":
@@ -190,6 +192,23 @@ class MenuCli:
                 print("Matrícula trancada com sucesso.")
             else:
                 print("Operação cancelada.")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+    def tela_calcular_situacao(self):
+        print("\n---- Calcular Situação ----")
+        try:
+            cod_aluno = int(input("Matrícula do Aluno: "))
+            cod_turma = int(input("ID da Turma: "))
+
+            situacao = self.sistema.ver_situacao_aluno(cod_aluno, cod_turma)
+
+            print(f"Cálculo realizado com sucesso!")
+            print(f"Nova Situação do Aluno: {situacao}")
+            
+            if situacao == "CURSANDO":
+                print("(Atenção: O aluno continua cursando pois não atingiu critérios de aprovação/reprovação ainda)")
 
         except ValueError as e:
             print(f"Erro: {e}")

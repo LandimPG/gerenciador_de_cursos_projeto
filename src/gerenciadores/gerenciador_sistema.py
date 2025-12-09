@@ -175,3 +175,26 @@ class GerenciadorSistema:
         
         matricula.trancar_matricula()
         return matricula
+    
+    def ver_situacao_aluno(self, cod_aluno, cod_turma):
+        """
+        Calcula a situação do aluno por meio do método calcular_situacao
+        em matricula.py
+        """
+
+        matricula = self.buscar_matricula(cod_aluno, cod_turma)
+        if matricula is None:
+            raise ValueError("Matrícula não foi encontrada.")
+        
+        # verifica notas/frequência e muda o status para APROVADO ou REPROVADO
+        matricula.calcular_situacao()
+
+        if matricula.estado != "CURSANDO":
+            #Remove das matriculas atuais
+            if matricula in matricula.aluno.matriculas_atuais:
+                matricula.aluno.matriculas_atuais.remove(matricula)
+
+            if matricula not in matricula.aluno.historico:
+                matricula.aluno.historico.append(matricula)
+
+        return matricula.estado
