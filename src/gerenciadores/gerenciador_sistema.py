@@ -162,3 +162,16 @@ class GerenciadorSistema:
             matricula.calcular_situacao()
             return matricula.estado
         return None
+    
+    def processar_trancamento(self, cod_aluno, cod_turma):
+        """
+        Muda o estado de matrícula para TRANCADA chamando o método
+        trancar_matricula
+        """
+
+        matricula = self.buscar_matricula(cod_aluno, cod_turma)
+        if matricula is None:
+            raise ValueError("Matrícula não encontrada.")
+        
+        matricula.trancar_matricula()
+        return matricula

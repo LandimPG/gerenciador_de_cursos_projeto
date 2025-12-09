@@ -19,6 +19,7 @@ class MenuCli:
         print("5. Lançar Notas")
         print("6. Lançar Frequência")
         print("7. Relatórios Gerais")
+        print("8. Trancar Matrícula")
         print("0. Sair e Salvar")
 
     def iniciar(self):
@@ -36,6 +37,7 @@ class MenuCli:
             elif opcao == '5': self.tela_lancar_notas()
             elif opcao == '6': self.tela_lancar_frequencia()
             elif opcao == '7': self.tela_relatorios()
+            elif opcao == '8': self.tela_trancar_matricula()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -176,3 +178,19 @@ class MenuCli:
             else:
                 print("  --   (Sem alunos na turma.)  --  ")
 
+    def tela_trancar_matricula(self):
+        print("\n---- Trancar Matrícula ----")
+        try:
+            cod_aluno = int(input("Matrícula do aluno: "))
+            cod_turma = int(input("Turma: "))
+
+            confirmacao = input("Tem certeza que deseja trancar ? (s/n): ").lower()
+            if confirmacao == "s":
+                self.sistema.processar_trancamento(cod_aluno, cod_turma)
+                print("Matrícula trancada com sucesso.")
+            else:
+                print("Operação cancelada.")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+            
