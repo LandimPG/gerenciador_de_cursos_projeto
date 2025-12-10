@@ -125,36 +125,40 @@ class Matricula:
 
         print(f"Nota {nota_adicionada:.2f} adicionada com sucesso.") 
 
-    def calcular_situacao(self):
+    def calcular_situacao(self, media_minima = 6.0, frequencia_minima = 75.0):
+        """
+        Calcula a situação final da matrícula do aluno.
+        """
 
         if self.estado != "CURSANDO":
             raise ValueError("A situação do aluno já foi definida.")
         
-        if self.notas == []:
-            print("Não há notas lançadas para calcular a situação")
-            return
+        if not self.notas:
+            raise ValueError("Não há notas lançadas para calcular a situação")
         
         media_arit = sum(self.notas) / len(self.notas)
 
-        if media_arit >= 6 and self.frequencia >= 75:
+        print(f"--- Calculando: Média Aluno: {media_arit:.2f} (Mínima: {media_minima}) | Freq Aluno: {self.frequencia}% (Mínima: {frequencia_minima}%) ---")
+
+        if media_arit >= media_minima and self.frequencia >= frequencia_minima:
             self.estado = "APROVADO"
             print ("Aluno APROVADO!! :)")
             print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
-        if media_arit < 6 and self.frequencia >= 75:
+        if media_arit < media_minima and self.frequencia >= frequencia_minima:
             self.estado = "REPROVADO_POR_NOTA"
             print("Aluno reprovado por nota. Vai dar certo! )")
             print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
-        if media_arit >= 6 and self.frequencia < 75:
+        if media_arit >= media_minima and self.frequencia < frequencia_minima:
             self.estado = "REPROVADO_POR_FREQUENCIA"
             print("Aluno reprovado por frequência. Vai dar certo! Não desista.")
             print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
-        if media_arit < 6 and self.frequencia < 75:
+        if media_arit < media_minima and self.frequencia < frequencia_minima:
             self.estado = "REPROVADO_POR_FREQUENCIA"
             print("Aluno reprovado por nota e frequência")
             print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")

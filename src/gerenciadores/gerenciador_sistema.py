@@ -1,5 +1,7 @@
 import sys
 import os
+import json
+from datetime import datetime
 
 from src.academicos.curso import Curso
 from src.academicos.turma import Turma
@@ -15,6 +17,27 @@ class GerenciadorSistema:
     def __init__(self):
         # Carrega os dados assim que o sistema inicia
         self.alunos, self.cursos, self.turmas, self.matriculas = carregar_dados()
+        
+        self.configuracoes = self.carregar_configuracoes()
+
+    def carregar_configuracoes(self):
+        """
+        Lê os arquivos do settings.json
+        """
+
+        try:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            root_dir = os.path.dirname(os.path.dirname(base_dir))
+            settings_path = os.path.join(root_dir, "settings.json")
+
+            with open (settings_path, "r", encoding="utf-8" ) as f:
+                return json.load(f)
+            
+        except FileNotFoundError:
+            print("Settings.json não foi encontrado. Usando formatações padrão")
+
+            return {"data_limite_trancamento": "2099-12-31"}
+        
 
     def salvar_tudo(self):
         salvar_dado(self.alunos, self.cursos, self.turmas, self.matriculas)
@@ -51,7 +74,6 @@ class GerenciadorSistema:
 
     def criar_curso(self, nome, codigo_curso, horas, ementa, pre_requisitos = None):
 
-
         # Validar se já existe
         if self.buscar_curso(codigo_curso) is not None:
             raise ValueError(f"Já existe um curso com o código {codigo_curso}")
@@ -71,7 +93,6 @@ class GerenciadorSistema:
         self.cursos.append(novo_curso)
         return novo_curso
     
-
     def criar_aluno(self, nome, email, matricula):
         if self.buscar_aluno(matricula) is not None:
             raise ValueError(f"Já existe um aluno com a matrícula: {matricula}.")
@@ -157,10 +178,15 @@ class GerenciadorSistema:
         return matricula
     
     def processar_calculo_situacao(self, cod_aluno, cod_turma):
+
         matricula = self.buscar_matricula(cod_aluno, cod_turma)
+
         if matricula:
-            matricula.calcular_situacao()
+            nota_minima = self.configuracoes.get("nota_minima_aprovacao", 6.0)
+            frequencia_minima = self.configuracoes.get("frequencia_minima_aprovacao", 75.0)
+            matricula.calcular_situacao(nota_minima, frequencia_minima)
             return matricula.estado
+        
         return None
     
     def processar_trancamento(self, cod_aluno, cod_turma):
@@ -168,11 +194,19 @@ class GerenciadorSistema:
         Muda o estado de matrícula para TRANCADA chamando o método
         trancar_matricula
         """
-
         matricula = self.buscar_matricula(cod_aluno, cod_turma)
         if matricula is None:
             raise ValueError("Matrícula não encontrada.")
         
+        data_limite_str = self.configuracoes.get("data_limite_trancamento")
+
+        if data_limite_str:
+            data_limite = datetime.strptime(data_limite_str, "%Y-%m-%d")
+            data_hoje = datetime.now()
+
+            if data_hoje > data_limite:
+                raise ValueError("Erro! Data limite de trancamento foi excedida ")
+
         matricula.trancar_matricula()
         return matricula
     
@@ -186,8 +220,13 @@ class GerenciadorSistema:
         if matricula is None:
             raise ValueError("Matrícula não foi encontrada.")
         
+        #Conseguir as informações do seetings.json
+        nota_minima = self.configuracoes.get("nota_minima_aprovacao", 6.0)
+        frequencia_minima = self.configuracoes.get("frequencia_minima_aprovacao", 75.0)
+
+
         # verifica notas/frequência e muda o status para APROVADO ou REPROVADO
-        matricula.calcular_situacao()
+        matricula.calcular_situacao(media_minima = nota_minima, frequencia_minima = frequencia_minima)
 
         if matricula.estado != "CURSANDO":
             #Remove das matriculas atuais
@@ -198,3 +237,4 @@ class GerenciadorSistema:
                 matricula.aluno.historico.append(matricula)
 
         return matricula.estado
+    
