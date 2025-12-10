@@ -92,8 +92,25 @@ O foco não está na interface, mas sim na correta implementação de:
              - `lancar_nota`  
              - `calcular_situacao`  (Calcula o estado da matricula atual e muda o atributo `estado`)
              - **Método Especial**: - `__eq__` (Verifica igualdade para impedir duplicação de matrícula)
-     
-**7. Sistema / Interface CLI (Arquivo main.py)**
+
+
+**7. Classe Gerenciador de Sistema**
+ *Controlador central do sistema (God`s view).*
+
+  - Métodos:
+             - `carregar configurações`  
+             - `Salvar tudo`  
+             - `Buscar Curso`  
+             - `Buscar Aluno`  
+             - `Buscar Turma`  
+             - `Buscar Matrícula`
+             - `Criar Curso`  
+             - `Criar Aluno`
+             - `Realizar Matrícula`
+             - `Processar Notas`
+             - `Processar Matriculas`
+    
+**8. Sistema / Interface CLI (Arquivo main.py)**
    *(Responsável pela orquestração e gerenciamento das listas globais)*  
    
    - Métodos de Gerenciamento (CRUD):  
@@ -104,7 +121,8 @@ O foco não está na interface, mas sim na correta implementação de:
              - `buscar_matricula`  (Método auxiliar)
              - `lancar_notas`  
              - `lancar_frequencia`  
-             - `listas_gerais`  
+             - `listas_gerais`
+     
            
 
    - Métodos de Relatórios Globais:  
