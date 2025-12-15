@@ -238,3 +238,38 @@ class GerenciadorSistema:
 
         return matricula.estado
     
+    def relatorio_alunos_em_risco(self, cod_turma):
+        """
+        Lista alunos de uma turma específica que estão com nota abaixo da média ou
+        frequência abaixo da mínima e que ainda estão cursando.
+        """
+
+        turma = self.buscar_turma(cod_turma)
+        if turma is None:
+            raise ValueError("Turma não encontrada.")
+        
+        min_nota = self.configuracoes.get("nota_minima_aprovacao", 6.0)
+        min_frequencia = self.configuracoes.get("frequencia_minima_aprovacao", 75)
+
+        alunos_risco = []
+
+        for m in turma.matriculas:
+            if m.estado == "CURSANDO":
+
+                media_atual = sum(m.notas) / len(m.notas) if m.notas else 0.0
+
+                if media_atual < min_nota or m.frequencia < min_frequencia:
+                    alunos_risco.append({
+                        "nome": m.aluno.nome,
+                        "matricula": m.aluno.codigo_matricula,
+                        "media_atual": media_atual,
+                        "frequencia": m.frequencia,
+                        "motivo": []
+                    })
+
+                if media_atual < min_nota:
+                    alunos_risco[-1]["motivo"].append(f"Nota abaixo da média. Nota: ({media_atual:.2f}) | Nota Mínima: ({min_nota})")
+                if m.frequencia < min_frequencia:
+                    alunos_risco[-1]["motivo"].append(f"Frequência abaixo da média. Freq: ({m.frequencia}%) | Freq Mínima: {min_frequencia}%")
+
+        return turma, alunos_risco

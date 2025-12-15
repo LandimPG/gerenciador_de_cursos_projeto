@@ -21,6 +21,7 @@ class MenuCli:
         print("7. Relatórios Gerais")
         print("8. Trancar Matrícula")
         print("9. Calcular Situação do Aluno.")
+        print("10. Relatório: Alunos em Risco.")
         print("0. Sair e Salvar")
 
     def iniciar(self):
@@ -40,6 +41,7 @@ class MenuCli:
             elif opcao == '7': self.tela_relatorios()
             elif opcao == '8': self.tela_trancar_matricula()
             elif opcao == '9': self.tela_calcular_situacao()
+            elif opcao == '10': self.tela_alunos_risco()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -243,3 +245,25 @@ class MenuCli:
         except ValueError as e:
             print(f"Erro: {e}")
             
+    def tela_alunos_risco(self):
+        print("\n---- Relatório de Alunos em Risco ----")
+
+        try:
+            cod_turma = int(input("Código Turma: "))
+
+            turma, lista_risco = self.sistema.relatorio_alunos_em_risco(cod_turma)
+
+            print(f"\nAnálise de risco - TURMA: {turma.codigo_turma} | CURSO ID: {turma.codigo_curso}")
+
+            if not lista_risco:
+                print(f"Nenhum aluno está em risco nessa turma. (Todos estão com notas e frequências acima ou igual ás medias)")
+            else:
+                print(f"ALERTA: {len(lista_risco)} aluno(s) precisa(m) de atenção.\n")
+                for item in lista_risco:
+                    motivos = " e ".join(item["motivo"])
+                    print(f" Nome: {item["nome"]} |Matrícula: {item["matricula"]}")
+                    print(f" Motivo: {motivos}")
+                    print(f"{"=" * 40}")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
