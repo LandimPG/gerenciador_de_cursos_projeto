@@ -162,6 +162,7 @@ class MenuCli:
         except ValueError as e:
             print(f"Erro: {e}")
 
+
     def tela_relatorios(self):
         print("\n---- Relatórios Gerais ----")
 
@@ -174,11 +175,20 @@ class MenuCli:
         for turma in turmas:
             print(f"\nTurma: {turma.codigo_turma} | Disciplina ID: {turma.codigo_curso}")
             print(f"Lotação: {len(turma)} / {turma.vagas_totais}")
+
+
             if turma.matriculas:
                 for m in turma.matriculas:
                     print(f"---- Aluno: {m.aluno.nome} | Situação: {m.estado} | Notas: {m.notas}")
             else:
                 print("  --   (Sem alunos na turma.)  --  ")
+
+            print(f"\n[Estatísticas da Turma]")
+
+            taxa = turma.ver_taxa_aprovacao_turma()
+            print(f"Taxa de Aprovação: {taxa}%")
+
+
 
     def tela_trancar_matricula(self):
         print("\n---- Trancar Matrícula ----")

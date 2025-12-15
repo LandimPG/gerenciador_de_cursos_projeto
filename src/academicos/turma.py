@@ -1,4 +1,6 @@
 import re
+import statistics
+
 
 from .oferta import Oferta
 
@@ -152,9 +154,18 @@ Responsabilidades:
     #ALERTA
     def ver_taxa_aprovacao_turma(self):
 
-        """Calcula a taxa de aprovação."""
-        print("Funcionalidade disponível em breve.")
-        return 0.0
+        """Calcula a taxa de aprovação (Porcentagem de alunos com status de Aprovado
+        com relação à turma específica.)"""
+
+        total_alunos = len(self.matriculas)
+
+        if total_alunos == 0:
+            return 0.0
+        
+        qtd_aprovados = sum(1 for m in self.matriculas if m.estado == "APROVADO")
+
+        taxa_aprov = (qtd_aprovados/total_alunos) * 100
+        return round(taxa_aprov, 2)
     
     #ALERTA
     def ver_distribuicao_notas(self):

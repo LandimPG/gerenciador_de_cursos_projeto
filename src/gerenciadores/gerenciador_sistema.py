@@ -11,7 +11,7 @@ from src.dados.persistencia import salvar_dado, carregar_dados
 
 class GerenciadorSistema:
     """
-    Controlador central do sistema (Facade).
+    Controlador central do sistema (God`s view).
     """
 
     def __init__(self):
