@@ -124,7 +124,7 @@ class Aluno(Pessoa):
                         raise ValueError(f"Choque de Horário! Ocorre no dia {dia} com a turma {matricula_existente.turma.codigo_turma}.")
                     
         self.matriculas_atuais.append(nova_matricula)
-        print("Aluno matriculado com sucesso.")
+
 
     def atualizar_historico(self):
         """

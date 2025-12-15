@@ -130,8 +130,13 @@ class MenuCli:
         try:
             cod_aluno = int(input("Matrícula do Aluno: "))
             cod_turma = int(input("ID da turma: "))
-            self.sistema.realizar_matricula(cod_aluno, cod_turma)
-            print("Matrícula realizada com sucesso.")
+            nova_matricula = self.sistema.realizar_matricula(cod_aluno, cod_turma)
+            id_curso = nova_matricula.turma.codigo_curso
+            curso = self.sistema.buscar_curso(id_curso)
+            nome_curso = curso.nome if curso else "Curso desconhecido"
+
+            print(f"\nAluno: {nova_matricula.aluno.nome}")
+            print(f"Matriculado com sucesso em: {nome_curso} | Id Turma: {nova_matricula.turma.codigo_turma}")
 
         except ValueError as e:
             print(f"Erro: {e}")
@@ -176,17 +181,32 @@ class MenuCli:
             print(f"\nTurma: {turma.codigo_turma} | Disciplina ID: {turma.codigo_curso}")
             print(f"Lotação: {len(turma)} / {turma.vagas_totais}")
 
-
+        #--- Lista Alunos ----
             if turma.matriculas:
                 for m in turma.matriculas:
                     print(f"---- Aluno: {m.aluno.nome} | Situação: {m.estado} | Notas: {m.notas}")
             else:
                 print("  --   (Sem alunos na turma.)  --  ")
 
+        # Estatísticas Matemáticas 
+
             print(f"\n[Estatísticas da Turma]")
 
             taxa = turma.ver_taxa_aprovacao_turma()
             print(f"Taxa de Aprovação: {taxa}%")
+
+          #Distribuição de Notas:
+            status = turma.ver_distribuicao_notas()
+
+            if status:
+                print(f"--- Média da Turma: {status['media_geral']}")
+                print(f"--- Melhor Média: {status['maior_nota']}")
+                print(f"--- Menor Média: {status['menor_nota']}")
+                print(f"--- Desvio Padrão: {status['desvio_padrao']}")
+            else:
+                print("\n---- Notas Insuficientes para gerar estatísticas. ----")
+
+            print(f"{'=' * 40}")
 
 
 

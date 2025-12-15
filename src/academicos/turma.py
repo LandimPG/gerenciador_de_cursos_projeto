@@ -148,7 +148,6 @@ Responsabilidades:
             raise ValueError("Este aluno já está matriculado nesta turma.")
 
         self.matriculas.append(nova_matricula)
-        print(f"Aluno matriculado na turma {self.codigo_turma} com sucesso.")
         return True
     
     #ALERTA
@@ -167,12 +166,38 @@ Responsabilidades:
         taxa_aprov = (qtd_aprovados/total_alunos) * 100
         return round(taxa_aprov, 2)
     
-    #ALERTA
+
+
+    #Ainda em Alerta
     def ver_distribuicao_notas(self):
         
-        """Calcula a taxa de aprovação."""
-        print("Funcionalidade disponível em breve.")
-        return 0.0
+        """Calcula as estastísiticas das notas dos alunos,
+        como: Média, mediana e Desvio Padrão
+        """
+        medias_finais = []
+
+        for matricula in self.matriculas:
+            if matricula.notas:
+                media_aluno = sum(matricula.notas) / len(matricula.notas)
+                medias_finais.append(media_aluno)
+
+        if not medias_finais:
+            return None
+
+
+        dados =  {
+            "media_geral": round(statistics.mean(medias_finais), 2),
+            "mediana": round(statistics.median(medias_finais), 2),
+            "maior_nota": round(max(medias_finais), 2),
+            "menor_nota": round(min(medias_finais), 2),
+            "desvio_padrao": 0.0
+        }
+
+        if len(medias_finais) > 1:
+            dados["desvio_padrao"] = round(statistics.stdev(medias_finais), 2)
+
+        return dados
+
 
     def __len__(self):
         return len(self.matriculas)
