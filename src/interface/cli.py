@@ -55,7 +55,7 @@ class MenuCli:
         """
         while True:
 
-            print("\n=== SISTEMA DE GESTÃO ACADÊMICA ===")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}=== SISTEMA DE GESTÃO ACADÊMICA ==={Cores.RESET}")
             print("1. Gestão de Cursos.")
             print("2. Gestão de Alunos.")
             print("3. Gestão de Turmas.")
@@ -63,7 +63,7 @@ class MenuCli:
             print("5. Relatórios e Estatísticas.")
             print("0. Sair e Salvar")
             
-            opcao = input("Opção: ")
+            opcao = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
 
             if opcao == '1': self.menu_cursos()
             elif opcao == '2': self.menu_alunos()
@@ -71,23 +71,23 @@ class MenuCli:
             elif opcao == '4': self.menu_matriculas()
             elif opcao == '5': self.menu_relatorios()
             elif opcao == '0':
-                print("Salvando dados.")
+                print(f"{Cores.VERDE}Salvando dados.{Cores.RESET}")
                 self.sistema.salvar_tudo()
                 print("Saindo do sistema!")
                 break
             else:
-                print("Opção inválida.")
+                print(f"{Cores.VERMELHO}Opção inválida.{Cores.RESET}")
 
     def menu_cursos(self):
         while True:
-            print("\n--- GESTÃO DE CURSOS ---")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- GESTÃO DE CURSOS ---{Cores.RESET}")
             print("1. Criar Novo Curso")
             print("2. Listar Cursos")
             print("3. Editar Curso")
             print("4. Excluir Curso")
             print("0. Voltar")
             
-            opcao = input("Opção: ")
+            opcao = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
             if opcao == '1': self.tela_cadastrar_curso()
             elif opcao == '2': self.tela_listar_cursos()
             elif opcao == '3': self.tela_editar_curso()
@@ -99,14 +99,14 @@ class MenuCli:
 
     def menu_alunos(self):
         while True:
-            print("\n--- GESTÃO DE ALUNOS ---")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- GESTÃO DE ALUNOS ---{Cores.RESET}")
             print("1. Cadastrar Aluno")
             print("2. Listar Alunos") # criar esse método depois
             print("3. Excluir Aluno")
             print("4. Editar Aluno")
             print("0. Voltar")
             
-            op = input("Opção: ")
+            op = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
             if op == '1': self.tela_cadastrar_aluno()
             elif op == '2': self.tela_listar_alunos()
             elif op == '3': self.tela_excluir_aluno()
@@ -119,7 +119,7 @@ class MenuCli:
 
     def menu_turmas(self): #TURMA
         while True:
-            print("\n--- GESTÃO DE TURMAS---")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- GESTÃO DE TURMAS---{Cores.RESET}")
             print("1. Abrir Nova Turma")
             print("2. Listar Turmas")
             print("3. Editar Turmas (local / vagas)")
@@ -127,7 +127,7 @@ class MenuCli:
             print("5. Excluir Turma")
             print("0. Voltar")
 
-            op = input("Opção: ")
+            op = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
             if op == '1': self.tela_nova_turma()
             elif op == '2': self.tela_listar_turmas()
             elif op == '3': self.tela_editar_turma()
@@ -140,7 +140,7 @@ class MenuCli:
 
     def menu_matriculas(self): #MATRICULA
         while True:
-            print("\n--- GESTÃO DE MATRÍCULAS ---")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- GESTÃO DE MATRÍCULAS ---{Cores.RESET}")
             print("1. Matricular Aluno")
             print("2. Trancar Matrícula")
             print("3. Lançar Notas")
@@ -148,7 +148,7 @@ class MenuCli:
             print("5. Calcular Situação Final")
             print("0. Voltar")
 
-            op = input("Opção: ")
+            op = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
             if op == '1': self.tela_matricular()
             elif op == '2': self.tela_trancar_matricula()
             elif op == '3': self.tela_lancar_notas()
@@ -160,13 +160,13 @@ class MenuCli:
 
     def menu_relatorios(self):
         while True:
-            print("\n--- RELATÓRIOS ---")
+            print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- RELATÓRIOS ---{Cores.RESET}")
             print("1. Relatório Geral (Por Turma)")
             print("2. Alunos em Risco")
             print("3. Top Melhores Alunos (CR)")
             print("0. Voltar")
 
-            op = input("Opção: ")
+            op = input(f"{Cores.AMARELO}Opção: {Cores.RESET}")
             if op == '1': self.tela_relatorios() # O antigo tela_relatorios
             elif op == '2': self.tela_alunos_risco()
             elif op == '3': self.tela_top_alunos()
@@ -178,11 +178,11 @@ class MenuCli:
 #Métodos de tela CRUD
 
     def tela_listar_cursos(self):
-        print("\n--- Lista de Cursos ---")
+        print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- Lista de Cursos ---{Cores.RESET}")
         if not self.sistema.cursos:
             print("Nenhum curso cadastrado.")
         else:
-            print(f"{'ID':<5} | {'Nome':<30} | {'Horas':<6} | {'Pré-Requisitos'}")
+            print(f"{Cores.CIANO}{'ID':<5} | {'Nome':<30} | {'Horas':<6} | {'Pré-Requisitos'}{Cores.RESET}")
             print("-" * 70)
             for c in self.sistema.cursos:
 
@@ -190,7 +190,7 @@ class MenuCli:
                 print(f"{c.codigo_curso:<5} | {c.nome:<30} | {c.carga_horaria:<6} | {pre_req_texto}")
 
     def tela_listar_alunos(self):
-        print("\n--- Lista de Alunos ---")
+        print(f"\n{Cores.MAGENTA}{Cores.NEGRITO}--- Lista de Alunos ---{Cores.RESET}")
         if not self.sistema.alunos:
             print("Nenhum aluno foi cadastrado.")
         else:
@@ -201,7 +201,7 @@ class MenuCli:
     def tela_excluir_curso(self):
         try:
 
-            cod = int(input("ID do curso para excluir: "))
+            cod = int(input(f"{Cores.AMARELO}ID do curso para excluir: {Cores.RESET}"))
             self.sistema.remover_curso(cod)
             print("Curso removido com sucesso.")
 
@@ -210,7 +210,7 @@ class MenuCli:
 
     def tela_editar_curso(self):
         try:
-            cod = self._ler_input_inteiro("ID do curso para editar: ")
+            cod = self._ler_input_inteiro(f"{Cores.AMARELO}ID do curso para editar: {Cores.RESET}")
 
             curso = self.sistema.buscar_curso(cod)
             if not curso:
@@ -222,15 +222,15 @@ class MenuCli:
 
             #Nome
             print(f"Nome atual: {curso.nome}")
-            novo_nome = input("Novo nome: ").strip()
+            novo_nome = input(f"{Cores.AMARELO}Novo nome: {Cores.RESET}").strip()
 
             #Carga Horária
             print(f"Carga Horária atual: {curso.carga_horaria}h")
-            nova_carga = self._ler_input_inteiro("Nova carga horária: ", obrigatorio=False)
+            nova_carga = self._ler_input_inteiro(f"{Cores.AMARELO}Nova carga horária: {Cores.RESET}", obrigatorio=False)
 
             #Pré-requisitos 
             print(f"Pré-requisitos atuais: {curso.lista_pre_requisitos}")
-            entrada_req = input("Novos IDs (sep. por vírgula) ou 'limpar' p/ remover todos: ").strip()
+            entrada_req = input(f"{Cores.AMARELO}Novos IDs (sep. por vírgula) ou 'limpar' p/ remover todos: {Cores.RESET}").strip()
 
 
             #Tratando dos dados
@@ -260,7 +260,7 @@ class MenuCli:
 
     def tela_excluir_aluno(self):
         try:
-            matricula = int(input("Matrícula do aluno para excluir: "))
+            matricula = int(input(f"{Cores.AMARELO}Matrícula do aluno para excluir: {Cores.RESET}"))
             self.sistema.remover_aluno(matricula)
             print("aluno removido com sucesso")
         
@@ -270,7 +270,7 @@ class MenuCli:
     def tela_editar_aluno(self):
         print("\n---- Editar Aluno ----")
         try:
-            matricula_atual = self._ler_input_inteiro("Matrícula do aluno a editar: ")
+            matricula_atual = self._ler_input_inteiro(f"{Cores.AMARELO}Matrícula do aluno a editar: {Cores.RESET}")
             
             # Busca apenas para mostrar os dados atuais 
             aluno = self.sistema.buscar_aluno(matricula_atual)
@@ -311,12 +311,12 @@ class MenuCli:
 # Telas de turma
     def tela_listar_turmas(self):
 
-        print("\n--- Turmas Cadastradas ---")
+        print(f"\n{Cores.MAGENTA}--- Turmas Cadastradas ---{Cores.RESET}")
         if not self.sistema.turmas:
             print("Nenhuma turma cadastrada.")
             return
 
-        print(f"{'ID':<5} | {'Curso Nome':<15} | {'Semestre':<8} | {'Local':<6} | {'Ocupação':<10} | {'Status'}")
+        print(f"{Cores.CIANO}{'ID':<5} | {'Curso Nome':<15} | {'Semestre':<8} | {'Local':<6} | {'Ocupação':<10} | {'Status'}{Cores.RESET}")
         print("-" * 75)
         
         for t in self.sistema.turmas:
@@ -326,10 +326,12 @@ class MenuCli:
             # Trunca o nome se for muito longo para não quebrar a tabela
             nome_curso = (nome_curso[:22] + '..') if len(nome_curso) > 22 else nome_curso
 
-            status = "ABERTA" if t.estado_aberta else "FECHADA"
+            status_cor = Cores.VERDE if t.estado_aberta else Cores.VERMELHO
+            status_texto = "ABERTA" if t.estado_aberta else "FECHADA"
+
             ocupacao = f"{len(t)}/{t.vagas_totais}"
             
-            print(f"{t.codigo_turma:<5} | {nome_curso:<25} | {t.semestre:<8} | {ocupacao:<8} | {status}")
+            print(f"{t.codigo_turma:<5} | {nome_curso:<20} | {t.semestre:<8} | {t.local:<6} | {ocupacao:<10} | {status_cor}{status_texto}{Cores.RESET}")
 
     def tela_editar_turma(self):
         try:
@@ -444,11 +446,12 @@ class MenuCli:
             print(f"Nome: {c.nome} | ID: {c.codigo_curso}.")
         
         try:
-            cod_curso = int(input("\nID curso: "))
-            cod_turma = int(input("ID turma: "))
-            vagas = int(input("Vagas totais: "))
-            semestre = input("Semestre (ex: 2026.1): ")
-            local = input("Local (ex: A02): ")
+            cod_curso = self._ler_input_inteiro("ID do Curso: ")
+            cod_turma = self._ler_input_inteiro("ID da Nova Turma: ")
+            vagas = self._ler_input_inteiro("Vagas totais: ")
+
+            semestre = input(f"{Cores.AMARELO}Semestre (ex: 2026.1): {Cores.RESET}").strip()
+            local = input(f"{Cores.AMARELO}Local (ex: A02): {Cores.RESET}").strip()
 
             print("Horário (Ex: 18:00-22:00) | Dias: seg, ter, qua...")
             dia = input("Dia: ").strip().lower()
@@ -463,67 +466,66 @@ class MenuCli:
 
     
     def tela_matricular(self):
-        print("\n---- Matricular Aluno ---- ")
+        print(f"\n{Cores.MAGENTA}---- Matricular Aluno ---- {Cores.RESET}")
 
-        print("\n[Passo 1] Escolha o Aluno:")
+        print(f"\n{Cores.AZUL}[Passo 1] Escolha o Aluno:{Cores.RESET}")
         self.tela_listar_alunos()
 
         try:
-            cod_aluno_entrada = input(">> Digite a Matrícula do Aluno (ou Enter para sair): ")
-            if not cod_aluno_entrada: return
-            cod_aluno = int(cod_aluno_entrada)
+            cod_aluno = self._ler_input_inteiro(f"{Cores.AMARELO}>> Digite a Matrícula do Aluno (ou Enter para sair): {Cores.RESET}", obrigatorio=False)
 
-            print("\n[Passo 2] Escolha a Turma:")
+            if cod_aluno is None: 
+                return # Sai se for vazio
+
+            print(f"\n{Cores.AZUL}[Passo 2] Escolha a Turma:{Cores.RESET}")
             self.tela_listar_turmas()
 
-            cod_turma = int(input("ID da turma: "))
+            cod_turma = self._ler_input_inteiro("ID da turma: ")
 
 
             nova_matricula = self.sistema.realizar_matricula(cod_aluno, cod_turma)
 
-            
-            id_curso = nova_matricula.turma.codigo_curso
-            curso = self.sistema.buscar_curso(id_curso)
-            nome_curso = curso.nome if curso else "Curso desconhecido"
             curso_nome = nova_matricula.turma.curso.nome if hasattr(nova_matricula.turma, 'curso') else "Disciplina"
-            print(f"\nSucesso! {nova_matricula.aluno.nome} matriculado em {curso_nome}.")
+            print(f"\n{Cores.VERDE}Sucesso! {nova_matricula.aluno.nome} matriculado em {curso_nome}.{Cores.RESET}")
 
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"{Cores.VERMELHO}Erro: {e}{Cores.RESET}")
 
     def tela_lancar_notas(self):
-        print("\n---- Lançar Notas ----")
+        print(f"\n{Cores.MAGENTA}---- Lançar Notas ----{Cores.RESET}")
         try:
-            cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("ID da Turma: "))
-            nota = float(input("Nota (0 - 10): "))
+            cod_aluno = self._ler_input_inteiro("Matrícula do aluno: ")
+            cod_turma = self._ler_input_inteiro("ID da Turma: ")
+
+            nota = self._ler_input_float("Nota (0 - 10): ")
 
             self.sistema.processar_notas(cod_aluno, cod_turma, nota)
 
-            print(f"Nota {nota:.2f} adicionada com sucesso.") 
+            print(f"{Cores.VERDE}Nota {nota:.2f} adicionada com sucesso.{Cores.RESET}") 
 
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"{Cores.VERMELHO}Erro: {e}{Cores.RESET}")
 
         
     def tela_lancar_frequencia(self):
-        print("\n---- Lançar Frequência ----")
+        print(f"\n{Cores.MAGENTA}---- Lançar Frequência ----{Cores.RESET}")
 
         try:
-            cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("ID da Turma: "))
-            frequencia = float(input("Frequência (0 - 100): "))
+            cod_aluno = self._ler_input_inteiro("Matrícula do aluno: ")
+            cod_turma = self._ler_input_inteiro("ID da Turma: ")
+
+            frequencia = self._ler_input_float("Frequência (0 - 100): ")
 
             self.sistema.processar_frequencia(cod_aluno, cod_turma, frequencia)
 
-            print(f"Frequência atualizada para {self.frequencia:.1f}% com sucesso.")
+            print(f"{Cores.VERDE}Frequência atualizada para {frequencia:.1f}% com sucesso.{Cores.RESET}")
 
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"{Cores.VERMELHO}Erro: {e}{Cores.RESET}")
 
 
     def tela_relatorios(self):
-        print("\n---- Relatórios Gerais ----")
+        print(f"\n{Cores.MAGENTA}---- Relatórios Gerais ----{Cores.RESET}")
 
         turmas = self.sistema.turmas
 
@@ -532,56 +534,78 @@ class MenuCli:
             return
         
         for turma in turmas:
-            print(f"\nTurma: {turma.codigo_turma} | Disciplina ID: {turma.codigo_curso}")
+
+            #Busca nome do curso para legibiligade do usuário
+            curso = self.sistema.buscar_curso(turma.codigo_curso)
+            nome_curso = curso.nome if curso else "Curso Desconhecido"
+
+            print(f"\n{Cores.CIANO}{Cores.NEGRITO}Turma: {turma.codigo_turma} | Disciplina: {nome_curso} (ID: {turma.codigo_curso}){Cores.RESET}")
             print(f"Lotação: {len(turma)} / {turma.vagas_totais}")
 
         #--- Lista Alunos ----
             if turma.matriculas:
+                print(f"  {Cores.NEGRITO}Lista de Alunos:{Cores.RESET}")
+                
                 for m in turma.matriculas:
-                    print(f"---- Aluno: {m.aluno.nome} | Situação: {m.estado} | Notas: {m.notas}")
+                    # 2. MELHORIA: Colorir o status (Aprovado=Verde, Reprovado=Vermelho, Cursando=Azul)
+                    if m.estado == "APROVADO":
+                        cor_status = Cores.VERDE
+                    elif "REPROVADO" in m.estado:
+                        cor_status = Cores.VERMELHO
+                    elif "TRANCADA" == m.estado:
+                        cor_status = Cores.AMARELO
+                    else:
+                        cor_status = Cores.AZUL # Cursando
+                    
+                    # Formata as notas bonitinhas (ex: 8.0, 9.5)
+                    notas_str = ", ".join([f"{n:.1f}" for n in m.notas]) if m.notas else "Sem notas"
+                    
+                    print(f"   -> Aluno: {m.aluno.nome:<25} | Situação: {cor_status}{m.estado:<15}{Cores.RESET} | Notas: {notas_str}")
             else:
-                print("  --   (Sem alunos na turma.)  --  ")
+                print(f"{Cores.AMARELO}   --   (Sem alunos na turma.)  --   {Cores.RESET}")
 
-        # Estatísticas Matemáticas 
-
-            print(f"\n[Estatísticas da Turma]")
+            # Estatísticas Matemáticas 
+            print(f"\n{Cores.AZUL}[Estatísticas da Turma]{Cores.RESET}")
 
             taxa = turma.ver_taxa_aprovacao_turma()
-            print(f"Taxa de Aprovação: {taxa}%")
+            # Pinta a taxa de verde se for alta (>70%), vermelha se baixa
+            cor_taxa = Cores.VERDE if taxa >= 70 else Cores.VERMELHO
+            print(f"Taxa de Aprovação: {cor_taxa}{taxa}%{Cores.RESET}")
 
-          #Distribuição de Notas:
+            # Distribuição de Notas:
             status = turma.ver_distribuicao_notas()
 
             if status:
-                print(f"--- Média da Turma: {status['media_geral']}")
-                print(f"--- Melhor Média: {status['maior_nota']}")
-                print(f"--- Menor Média: {status['menor_nota']}")
-                print(f"--- Desvio Padrão: {status['desvio_padrao']}")
+                print(f"   Média da Turma: {status['media_geral']}")
+                print(f"   Melhor Média:   {Cores.VERDE}{status['maior_nota']}{Cores.RESET}")
+                print(f"   Menor Média:    {Cores.VERMELHO}{status['menor_nota']}{Cores.RESET}")
+                print(f"   Desvio Padrão:  {status['desvio_padrao']}")
             else:
-                print("\n---- Notas Insuficientes para gerar estatísticas. ----")
+                print(f"{Cores.AMARELO}   ---- Notas Insuficientes para gerar estatísticas. ----{Cores.RESET}")
 
-            print(f"{'=' * 40}")
+            print(f"{Cores.MAGENTA}{'=' * 60}{Cores.RESET}")
 
 
 
     def tela_trancar_matricula(self):
-        print("\n---- Trancar Matrícula ----")
+        print(f"\n{Cores.MAGENTA}---- Trancar Matrícula ----{Cores.RESET}")
         try:
-            cod_aluno = int(input("Matrícula do aluno: "))
-            cod_turma = int(input("ID da Turma: "))
+            cod_aluno = self._ler_input_inteiro("Matrícula do aluno: ")
+            cod_turma = self._ler_input_inteiro("ID da Turma: ")
 
-            confirmacao = input("Tem certeza que deseja trancar ? (s/n): ").lower()
+            confirmacao = input(f"{Cores.AMARELO}Tem certeza que deseja trancar ? (s/n): {Cores.RESET}").lower().strip()
             if confirmacao == "s":
                 self.sistema.processar_trancamento(cod_aluno, cod_turma)
-                print("Matrícula trancada com sucesso.")
+                print(f"{Cores.VERDE}Matrícula trancada com sucesso.{Cores.RESET}")
             else:
-                print("Operação cancelada.")
+                print(f"{Cores.AMARELO}Operação cancelada.{Cores.RESET}")
 
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"{Cores.VERMELHO}Erro: {e}{Cores.RESET}")
+
 
     def tela_calcular_situacao(self):
-        print("\n---- Calcular Situação ----")
+        print(f"\n{Cores.MAGENTA}---- Calcular Situação ----{Cores.RESET}")
         try:
             cod_aluno = self._ler_input_inteiro("Matrícula do Aluno: ")
             cod_turma = self._ler_input_inteiro("ID da Turma: ")
@@ -598,46 +622,42 @@ class MenuCli:
             print(f"Erro: {e}")
             
     def tela_alunos_risco(self):
-        print("\n---- Relatório de Alunos em Risco ----")
+        print(f"\n{Cores.MAGENTA}---- Relatório de Alunos em Risco ----{Cores.RESET}")
 
         try:
-            cod_turma = int(input("Código Turma: "))
+            cod_turma = self._ler_input_inteiro("Código Turma: ")
 
             turma, lista_risco = self.sistema.relatorio_alunos_em_risco(cod_turma)
 
-            print(f"\nAnálise de risco - TURMA: {turma.codigo_turma} | CURSO ID: {turma.codigo_curso}")
+            curso = self.sistema.buscar_curso(turma.codigo_curso)
+            nome_curso = curso.nome if curso else "Curso Desconhecido"
+            
+            print(f"\nAnálise de risco - TURMA: {turma.codigo_turma} | DISCIPLINA: {Cores.CIANO}{nome_curso}{Cores.RESET}")
 
             if not lista_risco:
                 print(f"Nenhum aluno está em risco nessa turma. (Todos estão com notas e frequências acima ou igual ás medias)")
             else:
-                print(f"ALERTA: {len(lista_risco)} aluno(s) precisa(m) de atenção.\n")
+                print(f"{Cores.VERMELHO}ALERTA: {len(lista_risco)} aluno(s) precisa(m) de atenção.\n{Cores.RESET}")
                 for item in lista_risco:
                     motivos = " e ".join(item["motivo"])
-                    print(f" Nome: {item["nome"]} |Matrícula: {item["matricula"]}")
-                    print(f" Motivo: {motivos}")
-                    print(f"{"=" * 40}")
+
+                    print(f" Nome: {item['nome']} |Matrícula: {item['matricula']}")
+                    print(f" Motivo: {Cores.VERMELHO}{motivos}{Cores.RESET}")
+                    print(f"{Cores.MAGENTA}{'=' * 40}{Cores.RESET}")
 
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"{Cores.VERMELHO}Erro: {e}{Cores.RESET}")
 
     def tela_top_alunos(self):
-        print("\n---- Top Melhores Alunos (CR) ----")
+        print(f"\n{Cores.MAGENTA}---- Top Melhores Alunos (CR) ----{Cores.RESET}")
         
         try:
-            qtd_input = input("Quantos alunos deseja ver ? (Padrão 3): ")
-            n = int(qtd_input) if qtd_input.strip() else 3
-
-            if not qtd_input:
-                n = 3
-
-            elif qtd_input.isdigit():
-                n = int(qtd_input)
-            
-            else:
-                print("Entrada inválida: Usando o valor padrão de 3 alunos.")
-                n = 3
+            n_input = self._ler_input_inteiro("Quantos alunos deseja ver? (Padrão 3): ", obrigatorio=False)
+            # Se veio None (vazio) ou se o número é <= 0, usa 3. Caso contrário, usa o número.
+            n = n_input if (n_input is not None and n_input > 0) else 3
 
             top_lista = self.sistema.relatorio_top_alunos(n)
+
 
             if not top_lista:
                 print("Nenhum aluno cadastrado para gerar ranking.")
@@ -645,7 +665,7 @@ class MenuCli:
         
             print(f"\nRANKING: TOP {len(top_lista)} ALUNOS")
             print(f"{'Pos':<5} | {'Nome':<20} | {'CR':<5}")
-            print("-" * 35)
+            print("-" * 45)
 
             for i, aluno in enumerate(top_lista, start=1):
                 cr = aluno.calcular_cr()
