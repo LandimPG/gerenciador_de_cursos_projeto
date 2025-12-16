@@ -10,40 +10,25 @@ class MenuCli:
     def limpar_tela(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def exibir_menu(self):
-        print("\n=== GESTÃO ACADÊMICA ===")
-        print("1. Cadastrar Curso")
-        print("2. Cadastrar Aluno")
-        print("3. Abrir Turma")
-        print("4. Realizar Matrícula")
-        print("5. Lançar Notas")
-        print("6. Lançar Frequência")
-        print("7. Relatórios Gerais")
-        print("8. Trancar Matrícula")
-        print("9. Calcular Situação do Aluno.")
-        print("10.Relatório: Alunos em Risco.")
-        print("11.Relatório: Top Melhores Alunos (CR)")
-        print("0. Sair e Salvar")
-
     def iniciar(self):
         """
         Loop inicial do programa
         """
         while True:
-            self.exibir_menu()
+
+            print("\n=== SISTEMA DE GESTÃO ACADÊMICA ===")
+            print("1. Gestão de Cursos.")
+            print("2. Gestão de Alunos.")
+            print("3. Gestão de Turmas e Matrículas.")
+            print("4. Relatórios e Estatísticas.")
+            print("0. Sair e Salvar")
+            
             opcao = input("Opção: ")
 
-            if opcao == '1': self.tela_cadastrar_curso()
-            elif opcao == '2': self.tela_cadastrar_aluno()
-            elif opcao == '3': self.tela_nova_turma()
-            elif opcao == '4': self.tela_matricular()
-            elif opcao == '5': self.tela_lancar_notas()
-            elif opcao == '6': self.tela_lancar_frequencia()
-            elif opcao == '7': self.tela_relatorios()
-            elif opcao == '8': self.tela_trancar_matricula()
-            elif opcao == '9': self.tela_calcular_situacao()
-            elif opcao == '10': self.tela_alunos_risco()
-            elif opcao == '11': self.tela_top_alunos()
+            if opcao == '1': self.menu_cursos()
+            elif opcao == '2': self.menu_alunos()
+            elif opcao == '3': self.menu_turmas()
+            elif opcao == '4': self.menu_relatorios()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -52,6 +37,144 @@ class MenuCli:
             else:
                 print("Opção inválida.")
 
+    def menu_cursos(self):
+        while True:
+            print("\n--- GESTÃO DE CURSOS ---")
+            print("1. Criar Novo Curso")
+            print("2. Listar Cursos")
+            print("3. Editar Curso")
+            print("4. Excluir Curso")
+            print("0. Voltar")
+            
+            opcao = input("Opção: ")
+            if opcao == '1': self.tela_cadastrar_curso()
+            elif opcao == '2': self.tela_listar_cursos()
+            elif opcao == '3': self.tela_editar_curso()
+            elif opcao == '4': self.tela_excluir_curso()
+            elif opcao == '0': break
+
+            else:
+                print("Opção inválida.")
+
+    def menu_alunos(self):
+        while True:
+            print("\n--- GESTÃO DE ALUNOS ---")
+            print("1. Cadastrar Aluno")
+            print("2. Listar Alunos") # criar esse método depois
+            print("3. Excluir Aluno")
+            print("0. Voltar")
+            
+            op = input("Opção: ")
+            if op == '1': self.tela_cadastrar_aluno()
+            elif op == '2': self.tela_listar_alunos()
+            elif op == '3': self.tela_excluir_aluno()
+            elif op == '0': break
+
+            else:
+                print("Opção inválida.")
+
+
+    def menu_turmas(self):
+        while True:
+            print("\n--- TURMAS E MATRÍCULAS ---")
+            print("1. Abrir Nova Turma")
+            print("2. Matricular Aluno")
+            print("3. Trancar Matrícula")
+            print("4. Lançar Notas")
+            print("5. Lançar Frequência")
+            print("6. Calcular Situação Final")
+            print("0. Voltar")
+
+            op = input("Opção: ")
+            if op == '1': self.tela_nova_turma()
+            elif op == '2': self.tela_matricular()
+            elif op == '3': self.tela_trancar_matricula()
+            elif op == '4': self.tela_lancar_notas()
+            elif op == '5': self.tela_lancar_frequencia()
+            elif op == '6': self.tela_calcular_situacao()
+            elif op == '0': break
+
+            else:
+                print("Opção inválida.")
+
+    def menu_relatorios(self):
+        while True:
+            print("\n--- RELATÓRIOS ---")
+            print("1. Relatório Geral (Por Turma)")
+            print("2. Alunos em Risco")
+            print("3. Top Melhores Alunos (CR)")
+            print("0. Voltar")
+
+            op = input("Opção: ")
+            if op == '1': self.tela_relatorios() # O antigo tela_relatorios
+            elif op == '2': self.tela_alunos_risco()
+            elif op == '3': self.tela_top_alunos()
+            elif op == '0': break
+
+            else:
+                print("Opção inválida.")
+
+#Métodos de tela CRUD
+
+    def tela_listar_cursos(self):
+        print("\n--- Lista de Cursos ---")
+        if not self.sistema.cursos:
+            print("Nenhum curso cadastrado.")
+        else:
+            print(f"{'ID':<5} | {'Nome':<30} | {'Horas':<5}")
+            print("-" * 45)
+            for c in self.sistema.cursos:
+                print(f"{c.codigo_curso:<5} | {c.nome:<30} | {c.carga_horaria}h")
+
+    def tela_listar_alunos(self):
+        print("\n--- Lista de Alunos ---")
+        if not self.sistema.alunos:
+            print("Nenhum aluno foi cadastrado.")
+        else:
+            for a in self.sistema.alunos:
+                print(f"Matr: {a.codigo_matricula} | Nome: {a.nome}")
+
+        
+    def tela_excluir_curso(self):
+        try:
+
+            cod = int(input("ID do curso para excluir: "))
+            self.sistema.remover_curso(cod)
+            print("Curso removido com sucesso.")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+    def tela_editar_curso(self):
+        try:
+            cod = int(input("ID do curso para editar: "))
+
+            curso = self.sistema.buscar_curso(cod)
+            if not curso:
+                print("Curso não encontrado.")
+                return
+            
+            print(f"Editando: {curso.nome} (Deixe em branco para manter)")
+            novo_nome = input("Novo nome: ").strip()
+            nova_carga = input("Nova carga horária: ").strip()
+            nome_para_enviar = novo_nome if novo_nome else None
+            carga_para_enviar = int(nova_carga) if nova_carga else None
+
+            self.sistema.editar_curso(cod, nome_para_enviar, carga_para_enviar)
+
+            print("Curso atualizado com sucesso!")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+    def tela_excluir_aluno(self):
+        try:
+            matricula = int(input("Matrícula do aluno para excluir: "))
+            self.sistema.remover_aluno(matricula)
+            print("aluno removido com sucesso")
+        
+        except ValueError as e:
+            print(f"Erro: {e}")
 
 #   Métodos de Tela
     def tela_cadastrar_curso(self):
@@ -154,6 +277,8 @@ class MenuCli:
 
             self.sistema.processar_notas(cod_aluno, cod_turma, nota)
 
+            print(f"Nota {nota:.2f} adicionada com sucesso.") 
+
         except ValueError as e:
             print(f"Erro: {e}")
 
@@ -167,6 +292,8 @@ class MenuCli:
             frequencia = float(input("Frequência (0 - 100): "))
 
             self.sistema.processar_frequencia(cod_aluno, cod_turma, frequencia)
+
+            print(f"Frequência atualizada para {self.frequencia:.1f}% com sucesso.")
 
         except ValueError as e:
             print(f"Erro: {e}")

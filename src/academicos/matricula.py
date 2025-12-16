@@ -99,7 +99,6 @@ class Matricula:
             raise TypeError("Matrícula já foi trancada.")
         
         self.estado = "TRANCADA"
-        print("Matrícula trancada com sucesso.")
 
     def lancar_frequencia(self, nova_frequencia):
 
@@ -107,8 +106,6 @@ class Matricula:
             raise ValueError("Matrícula não está em estado para lançamento de frequência.")
         
         self.frequencia = nova_frequencia
-
-        print(f"Frequência atualizada para {self.frequencia:.1f}% com sucesso.")
 
     def lancar_nota(self, nota_adicionada):
 
@@ -123,7 +120,6 @@ class Matricula:
 
         self.notas.append(nota_adicionada)
 
-        print(f"Nota {nota_adicionada:.2f} adicionada com sucesso.") 
 
     def calcular_situacao(self, media_minima = 6.0, frequencia_minima = 75.0):
         """
@@ -142,26 +138,18 @@ class Matricula:
 
         if media_arit >= media_minima and self.frequencia >= frequencia_minima:
             self.estado = "APROVADO"
-            print ("Aluno APROVADO!! :)")
-            print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
         if media_arit < media_minima and self.frequencia >= frequencia_minima:
             self.estado = "REPROVADO_POR_NOTA"
-            print("Aluno reprovado por nota. Vai dar certo! )")
-            print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
         if media_arit >= media_minima and self.frequencia < frequencia_minima:
             self.estado = "REPROVADO_POR_FREQUENCIA"
-            print("Aluno reprovado por frequência. Vai dar certo! Não desista.")
-            print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
         
         if media_arit < media_minima and self.frequencia < frequencia_minima:
             self.estado = "REPROVADO_POR_FREQUENCIA"
-            print("Aluno reprovado por nota e frequência")
-            print(f"MÉDIA DE NOTA: {media_arit}\nFREQUÊNCIA: {self.frequencia}%")
             return
 
     def __eq__(self, objeto):

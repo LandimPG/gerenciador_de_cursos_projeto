@@ -287,3 +287,38 @@ class GerenciadorSistema:
         alunos_ordenados = sorted(self.alunos, key =lambda a: a.calcular_cr(), reverse=True)
 
         return alunos_ordenados[:top_n]
+    
+
+    def remover_curso(self, cod_curso):
+        curso = self.buscar_curso(cod_curso)
+
+        if not curso:
+            raise ValueError("Curso não encontrado.")
+        
+        #Não apaga o curso se tiver turmas o usando
+        for t in self.turmas:
+            if t.codigo_curso == cod_curso:
+                raise ValueError("Não é possível excluir, pois existem turmas vinculadas a esse curso.")
+            
+        self.cursos.remove(curso)
+
+    def editar_curso(self, cod_curso, novo_nome = None, nova_carga = None ):
+        curso = self.buscar_curso(cod_curso)
+        if not curso:
+            raise ValueError("Curso não encontrado")
+        
+        if novo_nome: curso.nome = novo_nome
+        if nova_carga: curso.carga_horaria = nova_carga
+
+        return curso
+    
+    def remover_aluno(self, matricula):
+        aluno = self.buscar_aluno(matricula)
+        if not aluno:
+            raise ValueError("Aluno não encontrado")
+        
+        if aluno.matriculas_atuais or aluno.historico:
+            raise ValueError("Não é possível excluir: Aluno possui vínculos acadêmicos.")
+        
+        self.alunos.remove(aluno)
+        return True
