@@ -21,7 +21,8 @@ class MenuCli:
         print("7. Relatórios Gerais")
         print("8. Trancar Matrícula")
         print("9. Calcular Situação do Aluno.")
-        print("10. Relatório: Alunos em Risco.")
+        print("10.Relatório: Alunos em Risco.")
+        print("11.Relatório: Top Melhores Alunos (CR)")
         print("0. Sair e Salvar")
 
     def iniciar(self):
@@ -42,6 +43,7 @@ class MenuCli:
             elif opcao == '8': self.tela_trancar_matricula()
             elif opcao == '9': self.tela_calcular_situacao()
             elif opcao == '10': self.tela_alunos_risco()
+            elif opcao == '11': self.tela_top_alunos()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -267,3 +269,38 @@ class MenuCli:
 
         except ValueError as e:
             print(f"Erro: {e}")
+
+    def tela_top_alunos(self):
+        print("\n---- Top Melhores Alunos (CR) ----")
+        
+        try:
+            qtd_input = input("Quantos alunos deseja ver ? (Padrão 3): ")
+            n = int(qtd_input) if qtd_input.strip() else 3
+
+            if not qtd_input:
+                n = 3
+
+            elif qtd_input.isdigit():
+                n = int(qtd_input)
+            
+            else:
+                print("Entrada inválida: Usando o valor padrão de 3 alunos.")
+                n = 3
+
+            top_lista = self.sistema.relatorio_top_alunos(n)
+
+            if not top_lista:
+                print("Nenhum aluno cadastrado para gerar ranking.")
+                return
+        
+            print(f"\nRANKING: TOP {len(top_lista)} ALUNOS")
+            print(f"{'Pos':<5} | {'Nome':<20} | {'CR':<5}")
+            print("-" * 35)
+
+            for i, aluno in enumerate(top_lista, start=1):
+                cr = aluno.calcular_cr()
+                print(f"#{i:<4} | {aluno.nome:<20} | {cr:.2f}")
+                
+        except ValueError as e:
+            print(f"Erro: {e}")
+        

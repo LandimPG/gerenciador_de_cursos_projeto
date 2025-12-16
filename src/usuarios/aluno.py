@@ -74,15 +74,24 @@ class Aluno(Pessoa):
         self.__matriculas_atuais =valor
 
     def calcular_cr(self):
-        
-        print("CR sendo calculado com média aritmética.")
+        """
+        Calcula o Coeficiente de Rendimento (CR) baseado na média aritmética
+        das disciplinas concluídas no histórico.
+        """
+
         soma_notas_finais = 0.0
         total_materias = 0
 
         #Fazendo o CR com média aritmética, depois atualizar para ponderada
         for matricula in self.historico:
+
+            if matricula.estado == "TRANCADA":
+                continue
+
             if matricula.notas:
+                
                 media_notas= sum(matricula.notas) / len(matricula.notas)
+
                 soma_notas_finais += media_notas
                 total_materias += 1
 

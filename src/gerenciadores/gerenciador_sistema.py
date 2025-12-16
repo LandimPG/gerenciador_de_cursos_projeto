@@ -273,3 +273,17 @@ class GerenciadorSistema:
                     alunos_risco[-1]["motivo"].append(f"Frequência abaixo da média. Freq: ({m.frequencia}%) | Freq Mínima: {min_frequencia}%")
 
         return turma, alunos_risco
+    
+
+    def relatorio_top_alunos(self, top_n = 5):
+        """
+        Retorna os N melhores alunos baseados no CR (Coeficiente de Rendimento.)
+        Utiliza do método __lt__ da classe Aluno para ordenar.
+        """
+
+        if not self.alunos:
+            return []
+        
+        alunos_ordenados = sorted(self.alunos, key =lambda a: a.calcular_cr(), reverse=True)
+
+        return alunos_ordenados[:top_n]
