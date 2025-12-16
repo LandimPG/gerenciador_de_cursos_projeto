@@ -12,7 +12,7 @@ Responsabilidades:
     Retém os horários (dias e horários) das aulas, local da sala de aula, código de turma, estado da turma (Aberta, Fechada) e matriulas (Representação em lista dos alunos matriculados na turma). Permite a geração de estatísticas como: taxa de aprovação e distribuição de notas (Média, moda e mediana)
 """
 
-    def __init__(self, codigo_curso:int, vagas_totais:int, semestre:str, horarios:dict, codigo_turma:int, estado_aberta:bool = False, matriculas:list = None,local:str = None):
+    def __init__(self, codigo_curso:int, vagas_totais:int, semestre:str, horarios:dict, codigo_turma:int, estado_aberta:bool = False, matriculas:list = None,local:str = None, curso_obj: object = None):
 
         super().__init__(codigo_curso, vagas_totais, semestre)
         self.horarios = horarios
@@ -20,7 +20,7 @@ Responsabilidades:
         self.estado_aberta = estado_aberta
         self.matriculas = matriculas
         self.local = local
-
+        self.curso = curso_obj
 #Encapsulamento e property
 
     @property

@@ -75,30 +75,34 @@ class Aluno(Pessoa):
 
     def calcular_cr(self):
         """
-        Calcula o Coeficiente de Rendimento (CR) baseado na média aritmética
-        das disciplinas concluídas no histórico.
+        Calcula o CR usando Média Ponderada pela Carga Horária.
+        Fórmula: Soma(Nota * CargaHoraria) / Soma(CargasHorarias)
         """
+        soma_notas_vezes_carga = 0.0
+        soma_cargas = 0
 
-        soma_notas_finais = 0.0
-        total_materias = 0
-
-        #Fazendo o CR com média aritmética, depois atualizar para ponderada
         for matricula in self.historico:
-
             if matricula.estado == "TRANCADA":
                 continue
 
             if matricula.notas:
+                media_disciplina = sum(matricula.notas) / len(matricula.notas)
                 
-                media_notas= sum(matricula.notas) / len(matricula.notas)
+                # Tenta pegar a carga horária do objeto curso dentro da turma
+                carga = 0
+                if hasattr(matricula.turma, 'curso') and matricula.turma.curso:
+                    carga = matricula.turma.curso.carga_horaria
+                else:
+                    # Fallback de segurança se algo der errado na injeção
+                    carga = 1 # Peso 1 para não dividir por zero
 
-                soma_notas_finais += media_notas
-                total_materias += 1
+                soma_notas_vezes_carga += (media_disciplina * carga)
+                soma_cargas += carga
 
-        if total_materias == 0:
+        if soma_cargas == 0:
             return 0.0
         
-        return soma_notas_finais / total_materias
+        return soma_notas_vezes_carga / soma_cargas
 
     #Auxílio para verificação de choque de horário
     def _verif_choque_chorario(self, horario1: str, horario2: str) -> bool:

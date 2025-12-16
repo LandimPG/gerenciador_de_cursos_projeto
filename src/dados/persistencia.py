@@ -47,11 +47,17 @@ def carregar_dados():
 
         lista_cursos = [Curso.from_dict(c) for c in dados.get("cursos", [])]
         
+        mapa_cursos = {c.codigo_curso: c for c in lista_cursos}
+
         lista_turmas = []
         mapa_turmas = {}
 
         for t_dict in dados.get("turmas", []):
             t = Turma.from_dict(t_dict)
+
+            if t.codigo_curso in mapa_cursos:
+                t.curso = mapa_cursos[t.codigo_curso]
+            
             lista_turmas.append(t)
             mapa_turmas[int(t.codigo_turma)] = t
 

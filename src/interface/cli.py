@@ -3,12 +3,51 @@ import sys
 
 from src.gerenciadores import gerenciador_sistema
 
+
+class Cores:
+    RESET = "\033[0m"      # Retorna à cor padrão
+    VERMELHO = "\033[91m"  # Para erros
+    VERDE = "\033[92m"     # Para sucesso
+    AMARELO = "\033[93m"   # Para alertas ou inputs
+    AZUL = "\033[94m"      # Para informações
+    MAGENTA = "\033[95m"   # Para títulos
+    CIANO = "\033[96m"     # Para tabelas/bordas
+    NEGRITO = "\033[1m"    # Para destaque extra
+
 class MenuCli:
     def __init__(self,sistema):
         self.sistema = sistema
 
     def limpar_tela(self):
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    def _ler_input_inteiro(self, mensagem, obrigatorio=True):
+        mensagem_colorida = f"{Cores.AMARELO}{mensagem}{Cores.RESET}"
+        entrada = input(mensagem_colorida).strip()
+        
+        # Se for obrigatório e estiver vazio
+        if obrigatorio and not entrada:
+            raise ValueError("Este campo é obrigatório e não pode ficar vazio.")
+        
+        # Se não for obrigatório e estiver vazio (ex: editar, deixar em branco)
+        if not obrigatorio and not entrada:
+            return None 
+
+        # Tenta converter
+        if not entrada.lstrip('-').isdigit(): # lstrip permite números negativos se precisar
+             raise ValueError(f"Entrada inválida: '{entrada}'. Por favor, digite apenas números inteiros.")
+        
+        return int(entrada)
+
+    def _ler_input_float(self, mensagem):
+        mensagem_colorida = f"{Cores.AMARELO}{mensagem}{Cores.RESET}"
+        entrada = input(mensagem_colorida).strip()
+        if not entrada:
+             raise ValueError("Este campo é obrigatório.")
+        try:
+            return float(entrada)
+        except ValueError:
+            raise ValueError(f"Entrada inválida: '{entrada}'. Digite um número decimal (ex: 8.5).")
 
     def iniciar(self):
         """
@@ -19,8 +58,9 @@ class MenuCli:
             print("\n=== SISTEMA DE GESTÃO ACADÊMICA ===")
             print("1. Gestão de Cursos.")
             print("2. Gestão de Alunos.")
-            print("3. Gestão de Turmas e Matrículas.")
-            print("4. Relatórios e Estatísticas.")
+            print("3. Gestão de Turmas.")
+            print("4. Gestão de Matrículas.")
+            print("5. Relatórios e Estatísticas.")
             print("0. Sair e Salvar")
             
             opcao = input("Opção: ")
@@ -28,7 +68,8 @@ class MenuCli:
             if opcao == '1': self.menu_cursos()
             elif opcao == '2': self.menu_alunos()
             elif opcao == '3': self.menu_turmas()
-            elif opcao == '4': self.menu_relatorios()
+            elif opcao == '4': self.menu_matriculas()
+            elif opcao == '5': self.menu_relatorios()
             elif opcao == '0':
                 print("Salvando dados.")
                 self.sistema.salvar_tudo()
@@ -62,38 +103,58 @@ class MenuCli:
             print("1. Cadastrar Aluno")
             print("2. Listar Alunos") # criar esse método depois
             print("3. Excluir Aluno")
+            print("4. Editar Aluno")
             print("0. Voltar")
             
             op = input("Opção: ")
             if op == '1': self.tela_cadastrar_aluno()
             elif op == '2': self.tela_listar_alunos()
             elif op == '3': self.tela_excluir_aluno()
+            elif op == '4': self.tela_editar_aluno()
             elif op == '0': break
 
             else:
                 print("Opção inválida.")
 
 
-    def menu_turmas(self):
+    def menu_turmas(self): #TURMA
         while True:
-            print("\n--- TURMAS E MATRÍCULAS ---")
+            print("\n--- GESTÃO DE TURMAS---")
             print("1. Abrir Nova Turma")
-            print("2. Matricular Aluno")
-            print("3. Trancar Matrícula")
-            print("4. Lançar Notas")
-            print("5. Lançar Frequência")
-            print("6. Calcular Situação Final")
+            print("2. Listar Turmas")
+            print("3. Editar Turmas (local / vagas)")
+            print("4. Fechar/Reabrir Turma")
+            print("5. Excluir Turma")
             print("0. Voltar")
 
             op = input("Opção: ")
             if op == '1': self.tela_nova_turma()
-            elif op == '2': self.tela_matricular()
-            elif op == '3': self.tela_trancar_matricula()
-            elif op == '4': self.tela_lancar_notas()
-            elif op == '5': self.tela_lancar_frequencia()
-            elif op == '6': self.tela_calcular_situacao()
+            elif op == '2': self.tela_listar_turmas()
+            elif op == '3': self.tela_editar_turma()
+            elif op == '4': self.tela_alterar_estado_turma()
+            elif op == '5': self.tela_excluir_turma()
             elif op == '0': break
 
+            else:
+                print("Opção inválida.")
+
+    def menu_matriculas(self): #MATRICULA
+        while True:
+            print("\n--- GESTÃO DE MATRÍCULAS ---")
+            print("1. Matricular Aluno")
+            print("2. Trancar Matrícula")
+            print("3. Lançar Notas")
+            print("4. Lançar Frequência")
+            print("5. Calcular Situação Final")
+            print("0. Voltar")
+
+            op = input("Opção: ")
+            if op == '1': self.tela_matricular()
+            elif op == '2': self.tela_trancar_matricula()
+            elif op == '3': self.tela_lancar_notas()
+            elif op == '4': self.tela_lancar_frequencia()
+            elif op == '5': self.tela_calcular_situacao()
+            elif op == '0': break
             else:
                 print("Opção inválida.")
 
@@ -121,10 +182,12 @@ class MenuCli:
         if not self.sistema.cursos:
             print("Nenhum curso cadastrado.")
         else:
-            print(f"{'ID':<5} | {'Nome':<30} | {'Horas':<5}")
-            print("-" * 45)
+            print(f"{'ID':<5} | {'Nome':<30} | {'Horas':<6} | {'Pré-Requisitos'}")
+            print("-" * 70)
             for c in self.sistema.cursos:
-                print(f"{c.codigo_curso:<5} | {c.nome:<30} | {c.carga_horaria}h")
+
+                pre_req_texto = str(c.lista_pre_requisitos) if c.lista_pre_requisitos else "-"
+                print(f"{c.codigo_curso:<5} | {c.nome:<30} | {c.carga_horaria:<6} | {pre_req_texto}")
 
     def tela_listar_alunos(self):
         print("\n--- Lista de Alunos ---")
@@ -132,7 +195,7 @@ class MenuCli:
             print("Nenhum aluno foi cadastrado.")
         else:
             for a in self.sistema.alunos:
-                print(f"Matr: {a.codigo_matricula} | Nome: {a.nome}")
+                print(f"Matrícula: {a.codigo_matricula} | Nome: {a.nome}")
 
         
     def tela_excluir_curso(self):
@@ -147,20 +210,48 @@ class MenuCli:
 
     def tela_editar_curso(self):
         try:
-            cod = int(input("ID do curso para editar: "))
+            cod = self._ler_input_inteiro("ID do curso para editar: ")
 
             curso = self.sistema.buscar_curso(cod)
             if not curso:
                 print("Curso não encontrado.")
                 return
             
-            print(f"Editando: {curso.nome} (Deixe em branco para manter)")
-            novo_nome = input("Novo nome: ").strip()
-            nova_carga = input("Nova carga horária: ").strip()
-            nome_para_enviar = novo_nome if novo_nome else None
-            carga_para_enviar = int(nova_carga) if nova_carga else None
+            print(f"--- Editando: {curso.nome} ---")
+            print("Pressione [Enter] vazio para manter o valor atual.")
 
-            self.sistema.editar_curso(cod, nome_para_enviar, carga_para_enviar)
+            #Nome
+            print(f"Nome atual: {curso.nome}")
+            novo_nome = input("Novo nome: ").strip()
+
+            #Carga Horária
+            print(f"Carga Horária atual: {curso.carga_horaria}h")
+            nova_carga = self._ler_input_inteiro("Nova carga horária: ", obrigatorio=False)
+
+            #Pré-requisitos 
+            print(f"Pré-requisitos atuais: {curso.lista_pre_requisitos}")
+            entrada_req = input("Novos IDs (sep. por vírgula) ou 'limpar' p/ remover todos: ").strip()
+
+
+            #Tratando dos dados
+            nome_enviar = novo_nome if novo_nome else None
+            carga_enviar = int(nova_carga) if nova_carga else None
+
+            lista_requisitos_enviar = None
+
+            if entrada_req:
+
+                if entrada_req.lower() == "limpar":
+                    lista_requisitos_enviar = [] # Envia lista vazia para apagar tudo
+                else:
+                    try:
+                        # Converte string "1, 2" em lista [1, 2]
+                        lista_requisitos_enviar = [int(x.strip()) for x in entrada_req.split(",")]
+                    except ValueError:
+                        print("Erro: Digite apenas números separados por vírgula.")
+                        return
+
+            self.sistema.editar_curso(cod, nome_enviar, carga_enviar, lista_requisitos_enviar)
 
             print("Curso atualizado com sucesso!")
 
@@ -176,13 +267,135 @@ class MenuCli:
         except ValueError as e:
             print(f"Erro: {e}")
 
+    def tela_editar_aluno(self):
+        print("\n---- Editar Aluno ----")
+        try:
+            matricula_atual = self._ler_input_inteiro("Matrícula do aluno a editar: ")
+            
+            # Busca apenas para mostrar os dados atuais 
+            aluno = self.sistema.buscar_aluno(matricula_atual)
+            if not aluno:
+                print("Aluno não encontrado.")
+                return
+
+            print(f"--- Editando: {aluno.nome} ---")
+            print("Pressione [Enter] vazio para manter o valor atual.")
+
+            # Coleta Nome
+            print(f"Nome atual: {aluno.nome}")
+            novo_nome = input("Novo nome: ").strip()
+
+            # Coleta Email
+            print(f"Email atual: {aluno.email}")
+            novo_email = input("Novo email: ").strip()
+
+            #Coleta Nova Matrícula
+            print(f"Matrícula atual: {aluno.codigo_matricula}")
+            nova_mat_str = input("Nova matrícula (Cuidado ao alterar): ").strip()
+
+            # Tratamento
+            nome_enviar = novo_nome if novo_nome else None
+            email_enviar = novo_email if novo_email else None
+            
+            # Se digitou algo na matrícula, converte para int, senão manda None
+            nova_mat_enviar = int(nova_mat_str) if nova_mat_str else None
+
+            # Chama o gerenciador
+            self.sistema.editar_aluno(matricula_atual, nome_enviar, email_enviar, nova_mat_enviar)
+            
+            print("Aluno atualizado com sucesso!")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+# Telas de turma
+    def tela_listar_turmas(self):
+
+        print("\n--- Turmas Cadastradas ---")
+        if not self.sistema.turmas:
+            print("Nenhuma turma cadastrada.")
+            return
+
+        print(f"{'ID':<5} | {'Curso Nome':<15} | {'Semestre':<8} | {'Local':<6} | {'Ocupação':<10} | {'Status'}")
+        print("-" * 75)
+        
+        for t in self.sistema.turmas:
+            # Busca o nome do curso na hora de imprimir
+            curso = self.sistema.buscar_curso(t.codigo_curso)
+            nome_curso = curso.nome if curso else "Curso Desconhecido"
+            # Trunca o nome se for muito longo para não quebrar a tabela
+            nome_curso = (nome_curso[:22] + '..') if len(nome_curso) > 22 else nome_curso
+
+            status = "ABERTA" if t.estado_aberta else "FECHADA"
+            ocupacao = f"{len(t)}/{t.vagas_totais}"
+            
+            print(f"{t.codigo_turma:<5} | {nome_curso:<25} | {t.semestre:<8} | {ocupacao:<8} | {status}")
+
+    def tela_editar_turma(self):
+        try:
+            cod = int(input("ID da Turma para editar: "))
+            turma = self.sistema.buscar_turma(cod)
+            if not turma:
+                print("Turma não encontrada.")
+                return
+
+            print(f"Editando Turma {cod} (Semestre {turma.semestre})")
+            print(f"Local atual: {turma.local} | Vagas: {turma.vagas_totais}")
+            print("Deixe vazio para manter o atual.")
+
+            novo_local = input("Novo Local (ex: B05): ").strip()
+            novas_vagas_str = input("Nova Qtd Vagas: ").strip()
+
+            local_enviar = novo_local if novo_local else None
+            vagas_enviar = int(novas_vagas_str) if novas_vagas_str else None
+
+            self.sistema.editar_turma(cod, local_enviar, vagas_enviar)
+            print("Turma atualizada!")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+
+    def tela_alterar_estado_turma(self):
+
+        try:
+            cod = self._ler_input_inteiro("ID da Turma: ")
+            turma = self.sistema.buscar_turma(cod)
+            if not turma:
+                print("Turma não encontrada.")
+                return
+
+            status_atual = "ABERTA" if turma.estado_aberta else "FECHADA"
+            print(f"Estado atual: {status_atual}")
+            
+            acao = input("Digite [A] para abrir ou [F] para fechar a turma: ").strip().lower()
+            
+            if acao == 'a':
+                self.sistema.alterar_estado_turma(cod, 'abrir')
+            elif acao == 'f':
+                self.sistema.alterar_estado_turma(cod, 'fechar')
+            else:
+                print("Opção inválida.")
+
+        except ValueError as e:
+            print(f"Erro: {e}")
+
+    def tela_excluir_turma(self):
+        try:
+            cod = int(input("ID da turma para excluir: "))
+            self.sistema.excluir_turma(cod)
+            print("Turma excluída com sucesso.")
+        except ValueError as e:
+            print(f"Erro: {e}")
+
 #   Métodos de Tela
     def tela_cadastrar_curso(self):
         print("---- Novo Curso ----")
         try:
             nome = input("Nome do curso: ")
-            codigo = int(input("Código(ID): "))
-            horas = int(input("Carga Horária: "))
+            codigo = self._ler_input_inteiro("Código(ID): ")
+            horas = self._ler_input_inteiro("Carga Horária: ")
+
             ementa = input("Ementa: ")
 
             print("Pré-requisitos (Digite os IDs separados por vírgula ou Enter para nenhum):")
@@ -194,9 +407,7 @@ class MenuCli:
                 try:
                     lista_req = [int(x.strip()) for x in entrada_req.split(",")]
                 except ValueError:
-                    print("Erro: digite apenas números separados por vírgula")
-                    return
-
+                    raise ValueError("Os pré-requisitos devem ser números separados por vírgula.")
 
             self.sistema.criar_curso(nome, codigo, horas, ementa, lista_req)
             print("Curso cadastrado com sucesso!")
@@ -254,16 +465,28 @@ class MenuCli:
     def tela_matricular(self):
         print("\n---- Matricular Aluno ---- ")
 
+        print("\n[Passo 1] Escolha o Aluno:")
+        self.tela_listar_alunos()
+
         try:
-            cod_aluno = int(input("Matrícula do Aluno: "))
+            cod_aluno_entrada = input(">> Digite a Matrícula do Aluno (ou Enter para sair): ")
+            if not cod_aluno_entrada: return
+            cod_aluno = int(cod_aluno_entrada)
+
+            print("\n[Passo 2] Escolha a Turma:")
+            self.tela_listar_turmas()
+
             cod_turma = int(input("ID da turma: "))
+
+
             nova_matricula = self.sistema.realizar_matricula(cod_aluno, cod_turma)
+
+            
             id_curso = nova_matricula.turma.codigo_curso
             curso = self.sistema.buscar_curso(id_curso)
             nome_curso = curso.nome if curso else "Curso desconhecido"
-
-            print(f"\nAluno: {nova_matricula.aluno.nome}")
-            print(f"Matriculado com sucesso em: {nome_curso} | Id Turma: {nova_matricula.turma.codigo_turma}")
+            curso_nome = nova_matricula.turma.curso.nome if hasattr(nova_matricula.turma, 'curso') else "Disciplina"
+            print(f"\nSucesso! {nova_matricula.aluno.nome} matriculado em {curso_nome}.")
 
         except ValueError as e:
             print(f"Erro: {e}")
@@ -360,8 +583,8 @@ class MenuCli:
     def tela_calcular_situacao(self):
         print("\n---- Calcular Situação ----")
         try:
-            cod_aluno = int(input("Matrícula do Aluno: "))
-            cod_turma = int(input("ID da Turma: "))
+            cod_aluno = self._ler_input_inteiro("Matrícula do Aluno: ")
+            cod_turma = self._ler_input_inteiro("ID da Turma: ")
 
             situacao = self.sistema.ver_situacao_aluno(cod_aluno, cod_turma)
 

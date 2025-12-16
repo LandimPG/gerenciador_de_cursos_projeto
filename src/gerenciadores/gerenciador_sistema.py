@@ -56,11 +56,14 @@ class GerenciadorSistema:
                 return a
         return None
     
-    def buscar_turma(self, codigo_turma: int):
+    def buscar_turma(self, codigo_turma):
+        str_buscado = str(codigo_turma).strip()
+
         for t in self.turmas:
-            # Usa getattr para segurança, caso o objeto venha incompleto do JSON
-            id_real = getattr(t, 'codigo_turma', None)
-            if id_real == codigo_turma:
+            # Garante que converte o ID da turma para string sem espaços
+            id_t = str(getattr(t, 'codigo_turma', '')).strip()
+            
+            if id_t == str_buscado:
                 return t
         return None
 
@@ -91,6 +94,7 @@ class GerenciadorSistema:
 
         novo_curso = Curso(nome, codigo_curso, horas, ementa, pre_requisitos)
         self.cursos.append(novo_curso)
+        self.salvar_tudo()
         return novo_curso
     
     def criar_aluno(self, nome, email, matricula):
@@ -99,6 +103,7 @@ class GerenciadorSistema:
         
         novo_aluno = Aluno(nome, email, matricula)
         self.alunos.append(novo_aluno)
+        self.salvar_tudo()
         return novo_aluno
 
     def criar_turma(self, cod_curso, cod_turma, vagas, semestre, local, horarios):
@@ -111,9 +116,10 @@ class GerenciadorSistema:
         if self.buscar_turma(cod_turma) is not None:
             raise ValueError(f"Já existe uma turma com o código: {cod_turma}")
         
-        nova_turma = Turma(cod_curso, vagas, semestre, horarios, cod_turma, local=local)
+        nova_turma = Turma(cod_curso, vagas, semestre, horarios, cod_turma, local=local, curso_obj=curso)
         nova_turma.abrir_turma()
         self.turmas.append(nova_turma)
+        self.salvar_tudo()
         return nova_turma
     
     def realizar_matricula(self, cod_aluno, cod_turma):
@@ -130,25 +136,39 @@ class GerenciadorSistema:
         # Usamos "if turma is None" para saber se a variável está vazia de verdade.
         if turma is None:
             raise ValueError(f"Turma {cod_turma} não encontrada.")
+        
+        curso = self.buscar_curso(turma.codigo_curso)
 
+        for historico in aluno.historico:
+            if historico.turma.codigo_curso == curso.codigo_curso and historico.estado == "APROVADO":
+                 raise ValueError(f"O aluno já foi APROVADO na disciplina {curso.nome}. Não é possível cursar novamente.")
         
         if self.buscar_matricula(cod_aluno, cod_turma) is not None:
             raise ValueError(f"Aluno já matriculado nessa turma.")
         
         # É preciso ter o objeto curso para saber a lista de pré requisitos
-        curso = self.buscar_curso(turma.codigo_curso)
+        if curso:
+            for historico in aluno.historico:
+                # Se o aluno tem um registro dessa matéria no histórico E foi aprovado
+                if historico.turma.codigo_curso == curso.codigo_curso and historico.estado == "APROVADO":
+                    raise ValueError(f"O aluno já foi APROVADO na disciplina {curso.nome}. Não é possível cursar novamente.")
+                
+
         if curso and curso.lista_pre_requisitos:
             for id_req in curso.lista_pre_requisitos:
+                # Verifica se esse ID está no histórico do aluno COMO APROVADO
                 aprovado = False
-
-                for historico in aluno.historico:
-
-                    if historico.turma.codigo_curso == id_req and historico.estado == "APROVADO":
+                for hist in aluno.historico:
+                    if hist.turma.codigo_curso == id_req and hist.estado == "APROVADO":
                         aprovado = True
                         break
-
+                
+                # Se rodou todo o histórico e não achou o pré-requisito aprovado:
                 if not aprovado:
-                    raise ValueError(f"Pré-requisito não atendido: O aluno precisa ser APROVADO no curso ID {id_req} antes.")
+                    # Busca o nome do curso pré-requisito só para mostrar na mensagem
+                    req_obj = self.buscar_curso(id_req)
+                    nome_req = req_obj.nome if req_obj else str(id_req)
+                    raise ValueError(f"Pré-requisito não atendido: O aluno precisa ser aprovado em {nome_req} (ID {id_req}) antes.")
                 
         # Verificar Duplicidade de vagas
         if self.buscar_matricula(cod_aluno, cod_turma) is not None:
@@ -160,6 +180,7 @@ class GerenciadorSistema:
         aluno.realizar_matricula(nova_matricula)  #VAlida choque de horário
 
         self.matriculas.append(nova_matricula)
+        self.salvar_tudo()
         return nova_matricula
     
     def processar_notas(self, cod_aluno, cod_turma, nota):
@@ -168,6 +189,7 @@ class GerenciadorSistema:
             raise ValueError("Matrícula não encontrada.")
         
         matricula.lancar_nota(nota)
+        self.salvar_tudo()
         return matricula
     
     def processar_frequencia(self, cod_aluno, cod_turma, frequencia):
@@ -175,6 +197,7 @@ class GerenciadorSistema:
         if matricula is None:
             raise ValueError("Matrícula não encontrada")
         matricula.lancar_frequencia(frequencia)
+        self.salvar_tudo()
         return matricula
     
     def processar_calculo_situacao(self, cod_aluno, cod_turma):
@@ -208,6 +231,7 @@ class GerenciadorSistema:
                 raise ValueError("Erro! Data limite de trancamento foi excedida ")
 
         matricula.trancar_matricula()
+        self.salvar_tudo()
         return matricula
     
     def ver_situacao_aluno(self, cod_aluno, cod_turma):
@@ -236,6 +260,7 @@ class GerenciadorSistema:
             if matricula not in matricula.aluno.historico:
                 matricula.aluno.historico.append(matricula)
 
+        self.salvar_tudo()
         return matricula.estado
     
     def relatorio_alunos_em_risco(self, cod_turma):
@@ -301,14 +326,29 @@ class GerenciadorSistema:
                 raise ValueError("Não é possível excluir, pois existem turmas vinculadas a esse curso.")
             
         self.cursos.remove(curso)
+        self.salvar_tudo()
 
-    def editar_curso(self, cod_curso, novo_nome = None, nova_carga = None ):
+    def editar_curso(self, cod_curso, novo_nome = None, nova_carga = None, novos_pre_reqs = None):
         curso = self.buscar_curso(cod_curso)
         if not curso:
             raise ValueError("Curso não encontrado")
         
         if novo_nome: curso.nome = novo_nome
         if nova_carga: curso.carga_horaria = nova_carga
+
+        if novos_pre_reqs is not None:
+
+            # O curso não pode ser pré-requisito para ele mesmo:
+            if cod_curso in novos_pre_reqs:
+                raise ValueError("O curso não pode ser pré-requisito dele mesmo.")
+            
+            # Os ids passados precisam existir no sistema:
+
+            for id_req in novos_pre_reqs:
+                if self.buscar_curso(id_req) is None:
+                    raise ValueError(f"Erro: O curso pré-requisito ID {id_req} não existe.")
+                
+            curso.lista_pre_requisitos = novos_pre_reqs
 
         return curso
     
@@ -321,4 +361,82 @@ class GerenciadorSistema:
             raise ValueError("Não é possível excluir: Aluno possui vínculos acadêmicos.")
         
         self.alunos.remove(aluno)
+        self.salvar_tudo()
         return True
+    
+    def editar_aluno(self, matricula_atual, novo_nome = None, novo_email = None, nova_matricula = None):
+
+        aluno = self.buscar_aluno(matricula_atual)
+
+        if not aluno:
+            raise ValueError("Aluno não encontrado")
+        
+        if novo_nome:
+            aluno.nome = novo_nome
+
+        if novo_email:
+            aluno.email = novo_email
+
+        if nova_matricula is not None and nova_matricula != matricula_atual:
+
+            if self.buscar_aluno(nova_matricula) is not None:
+                raise ValueError(f"Não é possível alterar: Já existe um aluno com a matrícula {nova_matricula}.")
+            
+
+            aluno.codigo_matricula = nova_matricula
+        self.salvar_tudo()
+        return aluno
+    
+    
+    #Gestão de turmas
+
+    def editar_turma(self, cod_turma, novo_local = None, novas_vagas = None):
+
+        turma = self.buscar_turma(cod_turma)
+        if not turma:
+            raise ValueError("Turma não encontrada")
+        
+        if novo_local:
+            turma.local = novo_local
+
+        if novas_vagas:
+
+            if novas_vagas < len(turma.matriculas):
+                raise ValueError(f"Não é possível reduzir para {novas_vagas} vagas. Já existem {len(turma.matriculas)} alunos matriculados.")
+            turma.vagas_totais = novas_vagas
+
+        return turma
+    
+    def excluir_turma(self, cod_turma):
+        turma = self.buscar_turma(cod_turma)
+        
+        if turma is None: # Melhor que "if not turma"
+            raise ValueError("Turma não encontrada")
+        
+        # Validação de alunos (Isso pode ser o que está impedindo, mas daria outra msg de erro)
+        if len(turma.matriculas) > 0:
+            raise ValueError("Não é possível excluir: Existem alunos matriculados nessa turma. Remova matrículas primeiro")
+        
+        self.turmas.remove(turma)
+        self.salvar_tudo() # Auto-save para segurança
+        return True
+    
+    def alterar_estado_turma(self, cod_turma, acao):
+        """
+        acao: 'abrir' ou 'fechar'
+        """
+
+        turma = self.buscar_turma(cod_turma)
+        if not turma:
+            raise ValueError("Turma não encontrada.")
+        
+
+        if acao == "abrir":
+            turma.abrir_turma()
+
+        elif acao == "fechar":
+            turma.fechar_turma()
+
+        
+
+
